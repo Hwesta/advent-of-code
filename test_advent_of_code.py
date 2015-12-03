@@ -2,7 +2,7 @@
 Tests for Advent of Code
 """
 
-import day1, day2
+import day1, day2, day3
 
 
 def test_day_1():
@@ -29,3 +29,11 @@ def test_day_2():
     assert day2.order_ribbons(['1x1x10']) == 14
     assert day2.order_ribbons(['2x3x4', '1x1x10']) == 34 + 14
 
+def test_day_3():
+    assert day3.delivered_houses('>') == 2
+    assert day3.delivered_houses('^>v<') == 4
+    assert day3.delivered_houses('^v^v^v^v^v') == 2
+
+    assert day3.delivered_houses_with_robot('^v') == 3
+    assert day3.delivered_houses_with_robot('^>v<') == 3
+    assert day3.delivered_houses_with_robot('^v^v^v^v^v') == 11
