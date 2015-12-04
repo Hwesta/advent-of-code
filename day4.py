@@ -22,9 +22,7 @@ def generate_advent_coins(secret_key, starts_with='00000'):
     secret_key = secret_key.encode('utf8')
     start = 0
     while True:
-        m = hashlib.md5()
-        m.update(secret_key)
-        m.update(str(start).encode('utf8'))
+        m = hashlib.md5(secret_key + str(start).encode('utf8'))
         if m.hexdigest().startswith(starts_with):
             return start
         start += 1
