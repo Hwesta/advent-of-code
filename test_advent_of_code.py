@@ -2,7 +2,7 @@
 Tests for Advent of Code
 """
 
-import day1, day2, day3
+import day1, day2, day3, day4
 
 
 def test_day_1():
@@ -37,3 +37,7 @@ def test_day_3():
     assert day3.delivered_houses_with_robot('^v') == 3
     assert day3.delivered_houses_with_robot('^>v<') == 3
     assert day3.delivered_houses_with_robot('^v^v^v^v^v') == 11
+
+def test_day_4():
+    assert day4.generate_advent_coins('abcdef') == 609043
+    assert day4.generate_advent_coins('pqrstuv') == 1048970
