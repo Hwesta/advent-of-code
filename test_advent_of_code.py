@@ -2,7 +2,7 @@
 Tests for Advent of Code
 """
 
-import day1, day2, day3, day4
+import day1, day2, day3, day4, day5
 
 
 def test_day_1():
@@ -41,3 +41,15 @@ def test_day_3():
 def test_day_4():
     assert day4.generate_advent_coins('abcdef') == 609043
     assert day4.generate_advent_coins('pqrstuv') == 1048970
+
+def test_day_5():
+    assert day5.nice_strings(['ugknbfddgicrmopn']) == 1
+    assert day5.nice_strings(['aaa']) == 1
+    assert day5.nice_strings(['jchzalrnumimnmhp']) == 0
+    assert day5.nice_strings(['haegwjzuvuyypxyu']) == 0
+    assert day5.nice_strings(['dvszwmarrgswjxmb']) == 0
+
+    assert day5.better_nice_strings(['qjhvhtzxzqqjkmpb']) == 1
+    assert day5.better_nice_strings(['xxyxx']) == 1
+    assert day5.better_nice_strings(['uurcxstgmygtbstg']) == 0
+    assert day5.better_nice_strings(['ieodomkazucvgmuy']) == 0
