@@ -2,7 +2,7 @@
 Tests for Advent of Code
 """
 
-import day1, day2, day3, day4, day5
+import day1, day2, day3, day4, day5, day6
 
 
 def test_day_1():
@@ -53,3 +53,11 @@ def test_day_5():
     assert day5.better_nice_strings(['xxyxx']) == 1
     assert day5.better_nice_strings(['uurcxstgmygtbstg']) == 0
     assert day5.better_nice_strings(['ieodomkazucvgmuy']) == 0
+
+def test_day_6():
+    assert day6.winning_lights(['turn on 0,0 through 999,999']) == 1000000
+    assert day6.winning_lights(['turn on 0,0 through 999,999', 'toggle 0,0 through 999,0']) == 1000000 - 1000
+    assert day6.winning_lights(['turn on 0,0 through 999,999', 'turn off 499,499 through 500,500']) == 1000000 - 4
+
+    assert day6.winning_lights_brightness(['turn on 0,0 through 0,0']) == 1
+    assert day6.winning_lights_brightness(['toggle 0,0 through 999,999']) == 2000000
