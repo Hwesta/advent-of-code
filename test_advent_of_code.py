@@ -2,7 +2,7 @@
 Tests for Advent of Code
 """
 
-import day1, day2, day3, day4, day5, day6
+import day1, day2, day3, day4, day5, day6, day7
 
 
 def test_day_1():
@@ -61,3 +61,24 @@ def test_day_6():
 
     assert day6.winning_lights_brightness(['turn on 0,0 through 0,0']) == 1
     assert day6.winning_lights_brightness(['toggle 0,0 through 999,999']) == 2000000
+
+def test_day_7():
+    data = [
+        '123 -> x',
+        '456 -> y',
+        'x AND y -> d',
+        'x OR y -> e',
+        'x LSHIFT 2 -> f',
+        'y RSHIFT 2 -> g',
+        'NOT x -> h',
+        'NOT y -> i',
+    ]
+    ret = day7.run_circuit(data)
+    assert ret['x'] == 123
+    assert ret['y'] == 456
+    assert ret['d'] == 72
+    assert ret['e'] == 507
+    assert ret['f'] == 492
+    assert ret['g'] == 114
+    assert ret['i'] == -457  # Unsigned: 65079
+    assert ret['h'] == -124  # Unsigned: 65412
