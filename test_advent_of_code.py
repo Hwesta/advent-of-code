@@ -2,7 +2,7 @@
 Tests for Advent of Code
 """
 
-import day1, day2, day3, day4, day5, day6, day7
+import day1, day2, day3, day4, day5, day6, day7, day8
 
 
 def test_day_1():
@@ -82,3 +82,19 @@ def test_day_7():
     assert ret['g'] == 114
     assert ret['i'] == -457  # Unsigned: 65079
     assert ret['h'] == -124  # Unsigned: 65412
+
+def test_day_8():
+    assert day8.wasted_space([r'""']) == 2
+    assert day8.wasted_space([r'"abc"']) == 2
+    assert day8.wasted_space([r'"aaa\"aaa"']) == 3
+    assert day8.wasted_space([r'"\x27"']) == 5
+    assert day8.wasted_space([
+        r'""', r'"abc"', r'"aaa\"aaa"', r'"\x27"'
+    ]) == 12
+    assert day8.encode_wasted_space([r'""']) == 4
+    assert day8.encode_wasted_space([r'"abc"']) == 4
+    assert day8.encode_wasted_space([r'"aaa\"aaa"']) == 6
+    assert day8.encode_wasted_space([r'"\x27"']) == 5
+    assert day8.encode_wasted_space([
+        r'""', r'"abc"', r'"aaa\"aaa"', r'"\x27"'
+    ]) == 19
