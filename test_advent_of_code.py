@@ -2,7 +2,7 @@
 Tests for Advent of Code
 """
 
-import day1, day2, day3, day4, day5, day6, day7, day8
+import day1, day2, day3, day4, day5, day6, day7, day8, day9
 
 
 def test_day_1():
@@ -98,3 +98,16 @@ def test_day_8():
     assert day8.encode_wasted_space([
         r'""', r'"abc"', r'"aaa\"aaa"', r'"\x27"'
     ]) == 19
+
+def test_day_9():
+    assert day9.santa_tsp([
+        'London to Dublin = 464',
+        'London to Belfast = 518',
+        'Dublin to Belfast = 141',
+    ]) == 605
+
+    assert day9.santa_tsp([
+        'London to Dublin = 464',
+        'London to Belfast = 518',
+        'Dublin to Belfast = 141',
+    ], comparison=max) == 982
