@@ -3,6 +3,7 @@ Tests for Advent of Code
 """
 
 import day1, day2, day3, day4, day5, day6, day7, day8, day9
+import day10
 
 
 def test_day_1():
@@ -111,3 +112,11 @@ def test_day_9():
         'London to Belfast = 518',
         'Dublin to Belfast = 141',
     ], comparison=max) == 982
+
+def test_day_10():
+    assert day10.look_and_say('1') == '11'
+    assert day10.look_and_say('11') == '21'
+    assert day10.look_and_say('21') == '1211'
+    assert day10.look_and_say('1211') == '111221'
+    assert day10.look_and_say('111221') == '312211'
+    assert day10.look_and_say('1', iterations=5) == '312211'
