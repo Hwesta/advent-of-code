@@ -3,7 +3,7 @@ Tests for Advent of Code
 """
 
 import day1, day2, day3, day4, day5, day6, day7, day8, day9
-import day10, day11
+import day10, day11, day12
 
 
 def test_day_1():
@@ -130,3 +130,18 @@ def test_day_11():
     assert day11.generate_password('abcdefgh') == 'abcdffaa'
     # This is very slow to generate
     # assert day11.generate_password('ghijklmn') == 'ghjaabcc'
+
+def test_day_12():
+    assert day12.json_sum('[1,2,3]') == 6
+    assert day12.json_sum('{"a":2,"b":4}') == 6
+    assert day12.json_sum('[[[3]]]') == 3
+    assert day12.json_sum('{"a":{"b":4},"c":-1}') == 3
+    assert day12.json_sum('{"a":[-1,1]}') == 0
+    assert day12.json_sum('[-1,{"a":1}]') == 0
+    assert day12.json_sum('[]') == 0
+    assert day12.json_sum('{}') == 0
+
+    assert day12.json_sum_not_red('[1,2,3]') == 6
+    assert day12.json_sum_not_red('[1,{"c":"red","b":2},3]') == 4
+    assert day12.json_sum_not_red('{"d":"red","e":[1,2,3,4],"f":5}') == 0
+    assert day12.json_sum_not_red('[1,"red",5]') == 6
