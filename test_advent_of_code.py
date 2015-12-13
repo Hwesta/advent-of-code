@@ -3,7 +3,7 @@ Tests for Advent of Code
 """
 
 import day1, day2, day3, day4, day5, day6, day7, day8, day9
-import day10, day11, day12
+import day10, day11, day12, day13
 
 
 def test_day_1():
@@ -145,3 +145,19 @@ def test_day_12():
     assert day12.json_sum_not_red('[1,{"c":"red","b":2},3]') == 4
     assert day12.json_sum_not_red('{"d":"red","e":[1,2,3,4],"f":5}') == 0
     assert day12.json_sum_not_red('[1,"red",5]') == 6
+
+def test_day_13():
+    assert day13.optimize_happiness([
+        'Alice would gain 54 happiness units by sitting next to Bob.',
+        'Alice would lose 79 happiness units by sitting next to Carol.',
+        'Alice would lose 2 happiness units by sitting next to David.',
+        'Bob would gain 83 happiness units by sitting next to Alice.',
+        'Bob would lose 7 happiness units by sitting next to Carol.',
+        'Bob would lose 63 happiness units by sitting next to David.',
+        'Carol would lose 62 happiness units by sitting next to Alice.',
+        'Carol would gain 60 happiness units by sitting next to Bob.',
+        'Carol would gain 55 happiness units by sitting next to David.',
+        'David would gain 46 happiness units by sitting next to Alice.',
+        'David would lose 7 happiness units by sitting next to Bob.',
+        'David would gain 41 happiness units by sitting next to Carol.',
+    ]) == 330
