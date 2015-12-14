@@ -3,7 +3,7 @@ Tests for Advent of Code
 """
 
 import day1, day2, day3, day4, day5, day6, day7, day8, day9
-import day10, day11, day12, day13
+import day10, day11, day12, day13, day14
 
 
 def test_day_1():
@@ -161,3 +161,14 @@ def test_day_13():
         'David would lose 7 happiness units by sitting next to Bob.',
         'David would gain 41 happiness units by sitting next to Carol.',
     ]) == 330
+
+def test_day_14():
+    assert day14.calc_distance([
+        'Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.',
+        'Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.',
+    ], seconds=1000) == 1120
+
+    assert day14.calc_points([
+        'Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.',
+        'Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.',
+    ], seconds=1000) == 689
