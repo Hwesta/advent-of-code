@@ -1,9 +1,10 @@
 """
 Tests for Advent of Code
 """
+import collections
 
 import day1, day2, day3, day4, day5, day6, day7, day8, day9
-import day10, day11, day12, day13, day14
+import day10, day11, day12, day13, day14, day15
 
 
 def test_day_1():
@@ -172,3 +173,21 @@ def test_day_14():
         'Comet can fly 14 km/s for 10 seconds, but then must rest for 127 seconds.',
         'Dancer can fly 16 km/s for 11 seconds, but then must rest for 162 seconds.',
     ], seconds=1000) == 689
+
+def test_day_15():
+    od = collections.OrderedDict([
+        ('butterscotch', {'capacity': -1, 'durability': -2, 'flavor': 6, 'texture': 3, 'calories': 8}),
+        ('cinnamon', {'capacity': 2, 'durability': 3, 'flavor': -2, 'texture': -1, 'calories': 3})
+    ])
+    assert day15.calc_score(od, [44, 56]) == 62842880
+    assert day15.make_best_cookie([
+        'Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8',
+        'Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3'
+    ]) == 62842880
+
+    assert day15.calc_score(od, [44, 56], max_cal=500) == 0
+    assert day15.calc_score(od, [40, 60], max_cal=500) == 57600000
+    assert day15.make_best_cookie([
+        'Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8',
+        'Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3',
+    ], max_cal=500) == 57600000
