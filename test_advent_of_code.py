@@ -4,7 +4,7 @@ Tests for Advent of Code
 import collections
 
 import day1, day2, day3, day4, day5, day6, day7, day8, day9
-import day10, day11, day12, day13, day14, day15
+import day10, day11, day12, day13, day14, day15, day17
 
 
 def test_day_1():
@@ -191,3 +191,7 @@ def test_day_15():
         'Butterscotch: capacity -1, durability -2, flavor 6, texture 3, calories 8',
         'Cinnamon: capacity 2, durability 3, flavor -2, texture -1, calories 3',
     ], max_cal=500) == 57600000
+
+def test_day_17():
+    assert day17.how_many_combinations(['20', '15', '10', '5', '5'], total=25) == 4
+    assert day17.how_many_combinations(['20', '15', '10', '5', '5'], total=25, find_min=True) == 3
