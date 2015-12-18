@@ -4,7 +4,7 @@ Tests for Advent of Code
 import collections
 
 import day1, day2, day3, day4, day5, day6, day7, day8, day9
-import day10, day11, day12, day13, day14, day15, day17
+import day10, day11, day12, day13, day14, day15, day17, day18
 
 
 def test_day_1():
@@ -195,3 +195,29 @@ def test_day_15():
 def test_day_17():
     assert day17.how_many_combinations(['20', '15', '10', '5', '5'], total=25) == 4
     assert day17.how_many_combinations(['20', '15', '10', '5', '5'], total=25, find_min=True) == 3
+
+def test_day_18():
+    assert day18.solve([
+        '.#.#.#',
+        '...##.',
+        '#....#',
+        '..#...',
+        '#.#..#',
+        '####..',
+    ], iterations=1) == 11
+    assert day18.solve([
+        '.#.#.#',
+        '...##.',
+        '#....#',
+        '..#...',
+        '#.#..#',
+        '####..',
+    ], iterations=4) == 4
+    assert day18.solve([
+        '.#.#.#',
+        '...##.',
+        '#....#',
+        '..#...',
+        '#.#..#',
+        '####..',
+    ], iterations=5, broken_lights=True) == 17
