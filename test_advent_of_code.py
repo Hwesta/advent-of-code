@@ -5,6 +5,7 @@ import collections
 
 import day1, day2, day3, day4, day5, day6, day7, day8, day9
 import day10, day11, day12, day13, day14, day15, day17, day18, day19
+import day20
 
 def test_day_1():
     version = day1.find_santas_floor_v3
@@ -236,4 +237,7 @@ def test_day_19():
         'HOH',
     ]) == 2
 
+def test_day_20():
+    assert day20.solve('150') == 8
+    assert day20.solve('100') == 6
 
