@@ -26,19 +26,71 @@ inc a
 
 What is the value in register b when the program in your puzzle input is finished executing?
 
-"""
+--- Part Two ---
 
-import collections
-import itertools
+The unknown benefactor is very thankful for releasi-- er, helping little Jane Marie with her computer. Definitely not to distract you, what is the value in register b after the program is finished executing if register a starts as 1 instead?
+
+"""
+from __future__ import division
 import os
 
+def hlf(param, registers, pc):
+    register = param.strip()
+    registers[register] /= 2
+    return registers, pc + 1
 
-def solve(data):
-    pass
+def tpl(param, registers, pc):
+    register = param.strip()
+    registers[register] *= 3
+    return registers, pc + 1
+
+def inc(param, registers, pc):
+    register = param.strip()
+    registers[register] += 1
+    return registers, pc + 1
+
+def jmp(param, registers, pc):
+    pc_inc = int(param)
+    return registers, pc + pc_inc
+
+def jie(param, registers, pc):
+    register, pc_inc = param.split(',')
+    if registers[register.strip()] % 2 == 0:
+        return jmp(pc_inc, registers, pc)
+    return registers, pc + 1
+
+def jio(param, registers, pc):
+    register, pc_inc = param.split(',')
+    if registers[register.strip()] == 1:
+        return jmp(pc_inc, registers, pc)
+    return registers, pc + 1
+
+def solve(data, a=0):
+    instruction_set = {
+        'hlf': hlf,
+        'tpl': tpl,
+        'inc': inc,
+        'jmp': jmp,
+        'jie': jie,
+        'jio': jio,
+    }
+    registers = {'a': a, 'b': 0}
+
+    pc = 0
+    while True:
+        try:
+            instruction = data[pc]
+        except IndexError:
+            break
+        action = instruction[:3]
+        registers, pc = instruction_set[action](instruction[3:], registers, pc)
+
+    return registers
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day23.input'), 'r') as f:
         data = f.read()
     data = data.splitlines()
-    print('The value in register b is', solve(data))
+    print('If a=0, the value in register b is', solve(data)['b'])
+    print('If a=1, the value in register b is', solve(data, a=1)['b'])
