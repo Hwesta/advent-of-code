@@ -3,9 +3,12 @@ Tests for Advent of Code
 """
 import collections
 
+import pytest
+
 import day1, day2, day3, day4, day5, day6, day7, day8, day9
 import day10, day11, day12, day13, day14, day15, day17, day18, day19
-import day20, day21, day23
+import day20, day21, day23, day24
+
 
 def test_day_1():
     version = day1.find_santas_floor_v3
@@ -246,3 +249,25 @@ def test_day_21():
 
 def test_day_23():
     assert day23.solve(['inc a', 'jio a, +2', 'tpl a', 'inc a'])['a'] == 2
+
+# @pytest.mark.parametrize('packages,qe', [
+#     ([[11, 9], [10, 8, 2], [7, 5, 4, 3, 1]], 99),
+#     ([[10, 9, 1], [11, 7, 2], [8, 5, 4, 3]], 90),
+#     ([[10, 8, 2], [11, 9], [7, 5, 4, 3, 1]], 160),
+#     ([[10, 7, 3], [11, 9], [8, 5, 4, 2, 1]], 210),
+#     ([[10, 5, 4, 1], [11, 9], [8, 7, 3, 2]], 200),
+#     ([[10, 5, 3, 2], [11, 9], [8, 7, 4, 1]], 300),
+#     ([[10, 4, 3, 2, 1], [11, 9], [8, 7, 5]], 240),
+#     ([[9, 8, 3], [11, 7, 2], [10, 5, 4, 1]], 216),
+#     ([[9, 7, 4], [11, 8, 1], [10, 5, 3, 2]], 252),
+#     ([[9, 5, 4, 2], [11, 8, 1], [10, 7, 3]], 360),
+#     ([[8, 7, 5], [11, 9], [10, 4, 3, 2, 1]], 280),
+#     ([[8, 5, 4, 3], [11, 9], [10, 7, 2, 1]], 480),
+#     ([[7, 5, 4, 3, 1], [11, 9], [10, 8, 2]], 420),
+
+# ])
+# def test_day_24_qe(packages, qe):
+#     assert day24.qe(packages) == qe
+
+def test_day_24():
+    assert day24.solve([1, 2, 3, 4, 5, 7, 8, 9, 10, 11]) == 99

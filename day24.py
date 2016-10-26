@@ -36,12 +36,39 @@ What is the quantum entanglement of the first group of packages in the ideal con
 """
 
 import collections
+from functools import reduce
 import itertools
 import os
+import operator
+
+def split_list(data):
+    # Too slow
+    for ordering in itertools.permutations(data):
+        for len1 in range(1, len(data) - 2):
+            for len2 in range(len1 + 1, len(data)):
+                groups = tuple(ordering[:len1]), tuple(ordering[len1:len2]), tuple((ordering[len2:]))
+                yield groups
+
+def balanced(a, b, c):
+    return sum(a) == sum(b) == sum(c)
+
+def qe(packages):
+    """Quantum entanglement = product"""
+    return reduce(operator.mul, packages[0])
 
 
 def solve(data):
-    pass
+    possible_solutions = set()
+    for g1, g2, g3 in split_list(data):
+        if not balanced(g1, g2, g3):
+            continue
+        print('groups set', [g1, g2, g3])
+        possible_solutions.add((g1, g2, g3))
+        print('ps', possible_solutions)
+
+    possible_solutions.sort(key=lambda x: qe(x))
+    print('possible solutions', possible_solutions[0], possible_solutions[1], possible_solutions[2])
+    return qe(possible_solutions[0])
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
