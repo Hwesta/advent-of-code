@@ -31,68 +31,12 @@ How many blocks away is the first location you visit twice?
 """
 import os
 
-direction = ['N', 'E', 'S', 'W']
-
-def solve2(data):
+def solve(data, dupe=False):
     steps = data.split(', ')
     x, y = 0, 0  # x = n/s, y = w/e
     facing = 0  # N, E, S, W
     visited = set()
     visited.add((0, 0))
-    flag = False
-    for step in steps:
-        turn = step[0]
-        amount = int(step[1:])
-
-        if turn == 'R':
-            facing = (facing + 1) % 4
-        elif turn == 'L':
-            facing = (facing - 1) % 4
-
-        if facing == 0:  # N
-            for s in range(amount):
-                x += 1
-                if (x, y) in visited:
-                    flag = True
-                    break
-                else:
-                    visited.add((x, y))
-        elif facing == 2:  # S
-            for s in range(amount):
-                x -= 1
-                if (x, y) in visited:
-                    flag = True
-                    break
-                else:
-                    visited.add((x, y))
-        elif facing == 1:  # E
-            for s in range(amount):
-                y -= 1
-                if (x, y) in visited:
-                    flag = True
-                    break
-                else:
-                    visited.add((x, y))
-        elif facing == 3:  # W
-            for s in range(amount):
-                y += 1
-                if (x, y) in visited:
-                    flag = True
-                    break
-                else:
-                    visited.add((x, y))
-
-        if flag:
-            break
-
-    return abs(x) + abs(y)
-
-
-def solve(data, simple=True):
-    steps = data.split(', ')
-    x, y = 0, 0  # x = n/s, y = w/e
-    facing = 0  # N, E, S, W
-
     for step in steps:
         turn = step[0]
         amount = int(step[1:])
@@ -101,14 +45,20 @@ def solve(data, simple=True):
         elif turn == 'L':
             facing = (facing - 1) % 4
 
-        if facing == 0:  # N
-                x += amount
-        elif facing == 2:  # S
-                x -= amount
-        elif facing == 1:  # E
-                y -= amount
-        elif facing == 3:  # W
-                y += amount
+        for _ in range(amount):
+            if facing == 0:  # N
+                    x += 1
+            elif facing == 2:  # S
+                    x -= 1
+            elif facing == 1:  # E
+                    y -= 1
+            elif facing == 3:  # W
+                    y += 1
+
+            if (x, y) in visited and dupe:
+                return abs(x) + abs(y)
+            else:
+                visited.add((x, y))
 
     return abs(x) + abs(y)
 
@@ -118,4 +68,4 @@ if __name__ == '__main__':
     with open(os.path.join(this_dir, 'day1.input')) as f:
         data = f.read()
     print('Easter Bunny HQ is', solve(data), 'blocks away.')
-    print('Easter Bunny HQ is actually', solve2(data, simple=False), 'blocks away.')
+    print('Easter Bunny HQ is actually', solve(data, dupe=True), 'blocks away.')
