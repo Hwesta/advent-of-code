@@ -1,7 +1,8 @@
 """
 Tests for Advent of Code
 """
-import day1
+from . import day1
+
 
 def test_day_1():
     assert day1.solve('R2, L3') == 5
