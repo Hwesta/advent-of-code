@@ -14,3 +14,6 @@ def test_day_1():
 def test_day_2():
     assert day2.solve("ULL\nRRDDD\nLURDL\nUUUUD") == '1985'
     assert day2.solve("ULL\nRRDDD\nLURDL\nUUUUD", big=True) == '5DB3'
+
+    assert day2.solve_better("ULL\nRRDDD\nLURDL\nUUUUD") == '1985'
+    assert day2.solve_better("ULL\nRRDDD\nLURDL\nUUUUD", big=True) == '5DB3'

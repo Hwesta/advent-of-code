@@ -93,13 +93,64 @@ def solve(data, big=False):
     for instruction in instructions:
         for letter in instruction:
             location = move_matrix[location][letter]
-        code += str(location)
+        code += location
 
     return code
+
+
+MATRIX = [
+    '.....',
+    '.123.',
+    '.456.',
+    '.789.',
+    '.....',
+]
+
+BIG_MATRIX = [
+    '.......',
+    '...1...',
+    '..234..',
+    '.56789.',
+    '..ABC..',
+    '...D...',
+    '.......',
+]
+
+
+def solve_better(data, big=False):
+    instructions = data.splitlines()
+    code = ''
+    if big:
+        x, y = 1, 3
+        move_matrix = BIG_MATRIX
+    else:
+        x, y = 2, 2
+        move_matrix = MATRIX
+
+    for instruction in instructions:
+        for letter in instruction:
+            dx = dy = 0
+            if letter == 'U':
+                dy = -1
+            elif letter == 'D':
+                dy = 1
+            elif letter == 'R':
+                dx = 1
+            elif letter == 'L':
+                dx = -1
+
+            if move_matrix[y + dy][x + dx] != '.':
+                x += dx
+                y += dy
+
+        code += move_matrix[y][x]
+
+    return code
+
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day2.input')) as f:
         data = f.read()
-    print('Tme bathroom code is', solve(data))
-    print('The real bathroom code is', solve(data, big=True))
+    print('The bathroom code is', solve_better(data))
+    print('The real bathroom code is', solve_better(data, big=True))
