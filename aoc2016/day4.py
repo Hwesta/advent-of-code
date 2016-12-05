@@ -30,25 +30,19 @@ For example, the real name for qzmt-zixmtkozy-ivhz-343 is very encrypted name.
 What is the sector ID of the room where North Pole objects are stored?
 
 """
-import itertools
+import collections
 import os
 import re
 
 def real_room(room_id, checksum):
-    sorted_id = sorted(room_id)
-    calc_checksum = ''
-    sorted_length = {}
+    sorted_length = collections.Counter(room_id)
+    del sorted_length['-']
 
-    for key, group in itertools.groupby(sorted_id):
-        if key == '-':
-            continue
-        sorted_length[key] = len(list(group))
+    # Sort on number of entries in counter, tiebreaker is character
+    # Take last five (largest entries)
+    calc_checksum = sorted(sorted_length, key=lambda x: (-sorted_length[x], x))[:5]
 
-    for key in sorted(sorted_length, key=lambda x: (-sorted_length[x], x)):
-        calc_checksum += key
-        if len(calc_checksum) == 5:
-            break
-    return calc_checksum == checksum
+    return calc_checksum == list(checksum)
 
 def rotate_room(room_id, sector_id):
     decrypted_id = ''
@@ -57,13 +51,10 @@ def rotate_room(room_id, sector_id):
         if character == '-':
             decrypted_id += ' '
             continue
-        # Only works with lowercase
-        numeric = ord(character)
-        numeric += rotate
+        numeric = ord(character) + rotate
         if numeric > ord('z'):
             numeric -= 26
-        new_char = chr(numeric)
-        decrypted_id += new_char
+        decrypted_id += chr(numeric)
 
     return decrypted_id
 
@@ -73,7 +64,7 @@ def solve(data):
     for line in data:
         match = re.match(regex, line)
         if not match:
-            print('error')
+            continue
         room_id = match.group(1)
         sector = int(match.group(2))
         checksum = match.group(3)
