@@ -37,56 +37,50 @@ You almost choke on your popcorn as the final character falls into place, produc
 Given the actual Door ID and this new method, what is the password? Be extra proud of your solution if it uses a cinematic "decrypting" animation.
 
 """
+from __future__ import print_function
 import hashlib
 
 import os
-
-def solve2(data):
-    secret_key = data
-    starts_with = '00000'
-    start = 0
-    password = [None, None, None, None, None, None, None, None]
-    print('secret', secret_key)
-    while True:
-        hashthis = (secret_key + str(start)).encode('utf8')
-        m = hashlib.md5(hashthis)
-        if m.hexdigest().startswith(starts_with):
-            print('found hex', m.hexdigest())
-            index = int(m.hexdigest()[5], 16)
-            value = m.hexdigest()[6]
-            print('idx', index, 'val', value)
-            if index < 8 and password[index] is None:
-                password[index] = value
-                print('password', password)
-        if password.count(None) == 0:
-            break
-        start += 1
-    return ''.join(password)
 
 def solve(data):
     secret_key = data
     starts_with = '00000'
     start = 0
-    password = ''
+    password1 = ''
+    password2 = [None] * 8
     print('secret', secret_key)
     while True:
         hashthis = (secret_key + str(start)).encode('utf8')
         m = hashlib.md5(hashthis)
         if m.hexdigest().startswith(starts_with):
             print('found hex', m.hexdigest())
-            password += m.hexdigest()[5]
-            print('password', password)
-        if len(password) == 8:
+
+            # Part 1
+            if len(password1) < 8:
+                password1 += m.hexdigest()[5]
+                print('password1', password1, len(password1))
+
+            # Part 2
+            index = int(m.hexdigest()[5], 16)
+            value = m.hexdigest()[6]
+            print('idx', index, 'val', value)
+            if index < 8 and password2[index] is None:
+                password2[index] = value
+                print('password2', password2)
+
+        if len(password1) == 8 and password2.count(None) == 0:
             break
+
         start += 1
-    return password
+
+    print('total hashes', start)
+    return password1, ''.join(password2)
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day5.input')) as f:
         data = f.read().strip()
 
-    password1 = solve(data)
-    password2 = solve2(data)
+    password1, password2 = solve(data)
     print('The first password is', password1)
     print('The second password is', password2)

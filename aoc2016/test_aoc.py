@@ -52,6 +52,5 @@ def test_day_4():
     assert day4.rotate_room('qzmt-zixmtkozy-ivhz', 343) == 'very encrypted name'
 
 
-def test_day_5():
-    assert day5.solve('abc') == '18f47a30'
-    assert day5.solve2('abc') == '05ace8e3'
+# def test_day_5():
+#     assert day5.solve('abc') == ('18f47a30', '05ace8e3')
