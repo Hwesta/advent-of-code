@@ -2,7 +2,7 @@
 Tests for Advent of Code
 """
 import pytest
-from . import day1, day2, day3, day4
+from . import day1, day2, day3, day4, day5
 
 
 @pytest.mark.parametrize('directions,distance,dupe', [
@@ -50,3 +50,8 @@ def test_day_4():
     ]) == 1514
 
     assert day4.rotate_room('qzmt-zixmtkozy-ivhz', 343) == 'very encrypted name'
+
+
+def test_day_5():
+    assert day5.solve('abc') == '18f47a30'
+    assert day5.solve2('abc') == '05ace8e3'
