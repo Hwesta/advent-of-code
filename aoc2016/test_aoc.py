@@ -2,7 +2,7 @@
 Tests for Advent of Code
 """
 import pytest
-from . import day1, day2, day3, day4, day5
+from . import day1, day2, day3, day4, day5, day6
 
 
 @pytest.mark.parametrize('directions,distance,dupe', [
@@ -54,3 +54,41 @@ def test_day_4():
 
 # def test_day_5():
 #     assert day5.solve('abc') == ('18f47a30', '05ace8e3')
+
+def test_day_6():
+    assert day6.solve([
+        'eedadn',
+        'drvtee',
+        'eandsr',
+        'raavrd',
+        'atevrs',
+        'tsrnev',
+        'sdttsa',
+        'rasrtv',
+        'nssdts',
+        'ntnada',
+        'svetve',
+        'tesnvt',
+        'vntsnd',
+        'vrdear',
+        'dvrsen',
+        'enarar',
+    ]) == 'easter'
+    assert day6.solve([
+        'eedadn',
+        'drvtee',
+        'eandsr',
+        'raavrd',
+        'atevrs',
+        'tsrnev',
+        'sdttsa',
+        'rasrtv',
+        'nssdts',
+        'ntnada',
+        'svetve',
+        'tesnvt',
+        'vntsnd',
+        'vrdear',
+        'dvrsen',
+        'enarar',
+    ], fewest=True) == 'advent'
