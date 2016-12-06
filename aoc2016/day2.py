@@ -83,14 +83,13 @@ MOVE_BIG = {
 }
 
 def solve(data, big=False):
-    instructions = data.splitlines()
     code = ''
     location = '5'
     if big:
         move_matrix = MOVE_BIG
     else:
         move_matrix = MOVE
-    for instruction in instructions:
+    for instruction in data:
         for letter in instruction:
             location = move_matrix[location][letter]
         code += location
@@ -118,7 +117,6 @@ BIG_MATRIX = [
 
 
 def solve_better(data, big=False):
-    instructions = data.splitlines()
     code = ''
     if big:
         x, y = 1, 3
@@ -127,7 +125,7 @@ def solve_better(data, big=False):
         x, y = 2, 2
         move_matrix = MATRIX
 
-    for instruction in instructions:
+    for instruction in data:
         for letter in instruction:
             dx = dy = 0
             if letter == 'U':
@@ -151,6 +149,6 @@ def solve_better(data, big=False):
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day2.input')) as f:
-        data = f.read()
+        data = f.read().splitlines()
     print('The bathroom code is', solve_better(data))
     print('The real bathroom code is', solve_better(data, big=True))

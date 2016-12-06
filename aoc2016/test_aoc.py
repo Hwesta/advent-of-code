@@ -15,8 +15,8 @@ def test_day_1(directions, distance, dupe):
     assert day1.solve(directions, dupe=dupe) == distance
 
 @pytest.mark.parametrize('directions,code,big', [
-    ("ULL\nRRDDD\nLURDL\nUUUUD", '1985', False),
-    ("ULL\nRRDDD\nLURDL\nUUUUD", '5DB3', True),
+    (["ULL", "RRDDD", "LURDL", "UUUUD"], '1985', False),
+    (["ULL", "RRDDD", "LURDL", "UUUUD"], '5DB3', True),
 ])
 def test_day_2(directions, code, big):
     assert day2.solve(directions, big=big) == code
