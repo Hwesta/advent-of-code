@@ -118,9 +118,36 @@ import collections
 import itertools
 import os
 
+SPELLS = {
+    'magic-missile': {'cost': 53, 'damage': 4},
+    'drain': {'cost': 73, 'damage': 2, 'heal': 2},
+    'shield': {'cost': 113, 'armor': 7, 'duration': 6},
+    'poison': {'cost': 173, 'damage': 3, 'duration': 6},
+    'recharge': {'cost': 229, 'mana': 101, 'duration': 5}
+}
+
+def run_game(boss, player):
+    attacker = player
+    defender = boss
+
+    while boss['hp'] > 0 and player['hp'] > 0 and player['mana'] > 0:
+        pass
+
+    if player['hp'] > 0 and player['mana'] > 0:
+        return 'player'
+    else:
+        return 'boss'
 
 def solve(data):
-    pass
+    player = {
+        'hp': 50,
+        'mana': 500,
+        'effects': []
+    }
+    boss = {
+        'hp': 51,
+        'damage': 9,
+    }
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
