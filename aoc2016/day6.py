@@ -42,7 +42,20 @@ Given the recording in your puzzle input and this new decoding methodology, what
 """
 from __future__ import print_function
 
+import collections
 import os
+
+def solve_better(data, fewest=False):
+    # Rotate data
+    rotated = zip(*data[::1])
+    solution = ''
+    for position in rotated:
+        histogram = collections.Counter(position).most_common()
+        if not fewest:
+            solution += histogram[0][0]
+        else:
+            solution += histogram[-1][0]
+    return solution
 
 def solve(data, fewest=False):
     corrected = []

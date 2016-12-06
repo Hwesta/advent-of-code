@@ -55,8 +55,8 @@ def test_day_4():
 # def test_day_5():
 #     assert day5.solve('abc') == ('18f47a30', '05ace8e3')
 
-def test_day_6():
-    assert day6.solve([
+@pytest.mark.parametrize('data', [
+    ([
         'eedadn',
         'drvtee',
         'eandsr',
@@ -73,22 +73,10 @@ def test_day_6():
         'vrdear',
         'dvrsen',
         'enarar',
-    ]) == 'easter'
-    assert day6.solve([
-        'eedadn',
-        'drvtee',
-        'eandsr',
-        'raavrd',
-        'atevrs',
-        'tsrnev',
-        'sdttsa',
-        'rasrtv',
-        'nssdts',
-        'ntnada',
-        'svetve',
-        'tesnvt',
-        'vntsnd',
-        'vrdear',
-        'dvrsen',
-        'enarar',
-    ], fewest=True) == 'advent'
+    ]),
+])
+def test_day_6(data):
+    assert day6.solve(data) == 'easter'
+    assert day6.solve(data, fewest=True) == 'advent'
+    assert day6.solve_better(data) == 'easter'
+    assert day6.solve_better(data, fewest=True) == 'advent'
