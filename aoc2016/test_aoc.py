@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from . import day1, day2, day3, day4, day5, day6
+from . import day1, day2, day3, day4, day5, day6, day7
 
 
 @pytest.mark.parametrize('directions,distance,dupe', [
@@ -84,3 +84,40 @@ def test_day_6(data):
     assert day6.solve(data, fewest=True) == 'advent'
     assert day6.solve_better(data) == 'easter'
     assert day6.solve_better(data, fewest=True) == 'advent'
+
+@pytest.mark.parametrize('ip,valid', [
+    ('abba[mnop]qrst', True),
+    ('abcd[bddb]xyyx', False),
+    ('aaaa[qwer]tyui', False),
+    ('ioxxoj[asdfgh]zxcvbn', True),
+])
+def test_day_7_tls(ip, valid):
+    assert day7.support_tls(ip) == valid
+
+@pytest.mark.parametrize('ip,valid', [
+    ('aba[bab]xyz', True),
+    ('xyx[xyx]xyx', False),
+    ('aaa[kek]eke', True),
+    ('zazbz[bzb]cdb', True),
+])
+def test_day_7_ssl(ip, valid):
+    assert day7.support_ssl(ip) == valid
+
+def test_day_7():
+    data = [
+        'abba[mnop]qrst',
+        'abcd[bddb]xyyx',
+        'aaaa[qwer]tyui',
+        'ioxxoj[asdfgh]zxcvbn',
+        'itgslvpxoqqakli[arktzcssgkxktejbno]wsgkbwwtbmfnddt[zblrboqsvezcgfmfvcz]iwyhyatqetsreeyhh'
+
+    ]
+    assert day7.solve(data) == 2
+
+    data = [
+        'aba[bab]xyz',
+        'xyx[xyx]xyx',
+        'aaa[kek]eke',
+        'zazbz[bzb]cdb',
+    ]
+    assert day7.solve(data, ssl=True) == 3
