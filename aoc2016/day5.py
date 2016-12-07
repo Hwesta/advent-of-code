@@ -49,9 +49,11 @@ def solve(data):
     password1 = ''
     password2 = [None] * 8
     print('secret', secret_key)
+    digest = hashlib.md5()
+    digest.update(secret_key.encode('utf8'))
     while True:
-        hashthis = (secret_key + str(start)).encode('utf8')
-        m = hashlib.md5(hashthis)
+        m = digest.copy()
+        m.update(str(start).encode('utf8'))
         if m.hexdigest().startswith(starts_with):
             print('found hex', m.hexdigest())
 
