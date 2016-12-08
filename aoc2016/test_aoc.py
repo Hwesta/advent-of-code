@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from . import day1, day2, day3, day4, day5, day6, day7
+from . import day1, day2, day3, day4, day5, day6, day7, day8
 
 
 @pytest.mark.parametrize('directions,distance,dupe', [
@@ -121,3 +121,6 @@ def test_day_7():
         'zazbz[bzb]cdb',
     ]
     assert day7.solve(data, ssl=True) == 3
+
+def test_day_8_rectangle():
+    assert day8.solve(['rect 3x2', 'rotate column x=1 by 1', 'rotate row y=0 by 4', 'rotate column x=1 by 1'], 7, 3) == 6
