@@ -40,29 +40,6 @@ What is the decompressed length of the file using this improved format?
 import os
 
 
-def solve_v2(data):
-    decompressed_len = 0
-    i = 0
-    while i < len(data):
-        if data[i] == '(':
-            # Get instruction
-            instruction = ''
-            i += 1  # Move past opening ()
-            while data[i] != ')':
-                instruction += data[i]
-                i += 1
-            i += 1  # Move past closing )
-            num_chars, repeat = map(int, instruction.split('x'))
-
-            # Add new data
-            decompressed_len += solve_v2(data[i:i+num_chars]) * repeat
-            i += num_chars
-        else:
-            decompressed_len += 1
-            i += 1
-
-    return decompressed_len
-
 def solve_v2_slow(data):
     # This works, but runs out of memory and is pathologically slow
     decompressed_len = 0
@@ -92,8 +69,8 @@ def solve_v2_slow(data):
 
     return decompressed_len
 
-def solve_v1(data):
-    decompressed = ''
+def solve(data, version=1):
+    decompressed_len = 0
     i = 0
 
     while i < len(data):
@@ -107,14 +84,19 @@ def solve_v1(data):
             i += 1  # Move past closing )
             num_chars, repeat = map(int, instruction.split('x'))
 
-            ref_data = data[i:i+num_chars]
-            decompressed += ref_data * repeat
+            # Add to decompressed length
+            if version == 1:
+                decompressed_len += num_chars * repeat
+            elif version == 2:
+                decompressed_len += solve(data[i:i+num_chars], version=2) * repeat
+
+            # Walk past parsed data
             i += num_chars
         else:
-            decompressed += data[i]
+            decompressed_len += 1
             i += 1
 
-    return len(decompressed)
+    return decompressed_len
 
 
 if __name__ == '__main__':

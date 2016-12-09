@@ -125,23 +125,18 @@ def test_day_7():
 def test_day_8_rectangle():
     assert day8.solve(['rect 3x2', 'rotate column x=1 by 1', 'rotate row y=0 by 4', 'rotate column x=1 by 1'], 7, 3) == 6
 
-@pytest.mark.parametrize('data,length', [
-    ('ADVENT', 6),
-    ('A(1x5)BC', 7),
-    ('(3x3)XYZ', 9),
-    ('(6x1)(1x3)A', 6),
-    ('X(8x2)(3x3)ABCY', 18),
+@pytest.mark.parametrize('data,length,version', [
+    ('ADVENT', 6, 1),
+    ('A(1x5)BC', 7, 1),
+    ('(3x3)XYZ', 9, 1),
+    ('(6x1)(1x3)A', 6, 1),
+    ('X(8x2)(3x3)ABCY', 18, 1),
+    ('ADVENT', 6, 2),
+    ('A(1x5)BC', 7, 2),
+    ('(3x3)XYZ', 9, 2),
+    ('X(8x2)(3x3)ABCY', 20, 2),
+    ('(27x12)(20x12)(13x14)(7x10)(1x12)A', 241920, 2),
+    ('(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN', 445, 2),
 ])
-def test_day_9(data, length):
-    assert day9.solve_v1(data) == length
-
-@pytest.mark.parametrize('data,length', [
-    ('ADVENT', 6),
-    ('A(1x5)BC', 7),
-    ('(3x3)XYZ', 9),
-    ('X(8x2)(3x3)ABCY', 20),
-    ('(27x12)(20x12)(13x14)(7x10)(1x12)A', 241920),
-    ('(25x3)(3x3)ABC(2x3)XY(5x2)PQRSTX(18x9)(3x2)TWO(5x7)SEVEN', 445),
-])
-def test_day_9_recurse(data, length):
-    assert day9.solve_v2(data) == length
+def test_day_9(data, length, version):
+    assert day9.solve(data, version=version) == length
