@@ -6,7 +6,7 @@ import unittest
 import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
-
+from . import day10
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -140,3 +140,15 @@ def test_day_8_rectangle():
 ])
 def test_day_9(data, length, version):
     assert day9.solve(data, version=version) == length
+
+def test_day_10():
+    data = [
+        'value 5 goes to bot 2',
+        'bot 2 gives low to bot 1 and high to bot 0',
+        'value 3 goes to bot 1',
+        'bot 1 gives low to output 1 and high to bot 0',
+        'bot 0 gives low to output 2 and high to output 0 ',
+        'value 2 goes to bot 2',
+    ]
+    assert day10.solve(data, 2, 5) == '2'
+    assert day10.solve(data, 2, 5, output_goal=True) == 5*2*3
