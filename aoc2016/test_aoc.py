@@ -150,5 +150,5 @@ def test_day_10():
         'bot 0 gives low to output 2 and high to output 0 ',
         'value 2 goes to bot 2',
     ]
-    assert day10.solve(data, 2, 5) == '2'
-    assert day10.solve(data, 2, 5, output_goal=True) == 5*2*3
+    assert day10.solve(data, comparing=[2, 5]) == '2'
+    assert day10.solve(data) == 5*2*3
