@@ -163,23 +163,21 @@ class State(object):
 
     def __eq__(self, other):
         # Return true if they are equivalent - ie type-rotated
-        if self.elevator['floor'] != other.elevator['floor']:
+        if self.elevator != other.elevator:
             return False
-        floor = self.elevator['floor']
-        # Naive - needs to check for type rotation
-        self_items = set(self.floors[floor] + self.elevator['contains'])
-        other_items = set(other.floors[floor] + other.elevator['contains'])
-        return self_items == other_items
 
+        for self_floor, other_floor in zip(self.floors, other.floors):
+            if set(self_floor) != set(other_floor):
+                return False
+        return True
 
     def __hash__(self):
         # So can be put in a set
         floors = copy.deepcopy(self.floors)
-        floor = self.elevator['floor']
-        floors[floor] += self.elevator['contains'] + ['E']
-        return tuple(tuple(f) for f in floors)
+        floors[self.elevator] += ['E']
+        return hash(tuple(tuple(f) for f in floors))
 
-    def new_state(self):
+    def next_state(self):
         """Generate a child state from here."""
         # Options:
         # Bring 1 item up
@@ -187,33 +185,11 @@ class State(object):
         # Bring 1 item down
         # Bring 2 items down
 
-def valid_elevator(elevator):
-    """Check if the elevator has 0-2 items & doesn't fry anything."""
-    num_items = len(elevator['contains'])
-    if num_items <= 0:  # Empty, can't move
-        return False
-    elif num_items == 1:  # One item can't conflict
-        return True
-    elif num_items == 2:  # Two items
-        thing = [i[1] for i in elevator['contains']]
-        if thing.count('M') == 2 or thing.count('G') == 2:  # Same thing
-            return True
-        # M & G
-        types = [i[0] for i in elevator['contains']]
-        if types[0] == types[1]:  # Same type
-            return True
-        else:  # Mismatched M & G
-            return False
-    elif num_items > 2:  # Too many items
-        return False
-
 
 def valid_floor(floors, elevator):
     """Nothing is fried on the floor with this elevator."""
-    floor = elevator['floor']
-    all_things = floors[floor] + elevator['contains']
-    all_machines = set(t[0] for t in all_things if t[1] == 'M')
-    all_generators = set(t[0] for t in all_things if t[1] == 'G')
+    all_machines = set(t[0] for t in floors[elevator] if t[1] == 'M')
+    all_generators = set(t[0] for t in floors[elevator] if t[1] == 'G')
 
     unshielded_machines = all_machines - all_generators
 
@@ -237,12 +213,11 @@ def is_done(floors):
 
 
 def solve(data):
-    floor = data
-    elevator = {'floor': 0, 'contains': []}
+    floors = data
 
     queue = collections.deque()
-    starting_state =
-    queue.append(TinyTree(3))
+    starting_state = State(floors, 0)
+    queue.append(starting_state)
     ever_seen = set()
     steps = 0
     while queue:
