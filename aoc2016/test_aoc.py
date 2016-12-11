@@ -99,6 +99,7 @@ def test_day_7_tls(ip, valid):
     ('xyx[xyx]xyx', False),
     ('aaa[kek]eke', True),
     ('zazbz[bzb]cdb', True),
+    ('aaa[aaa]aba', False)
 ])
 def test_day_7_ssl(ip, valid):
     assert day7.support_ssl(ip) == valid

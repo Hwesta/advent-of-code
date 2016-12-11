@@ -81,8 +81,9 @@ def support_ssl(ip):
     for o in outside:
         # Need to find overlapping matches
         overlapping_matches = regex.findall(aba_regex, o, overlapped=True)
-        if overlapping_matches:
-            aba_matches += overlapping_matches
+        for match in overlapping_matches:
+            if match[0] != match[1]:
+                aba_matches.append(match)
 
     # Look for a bab in each inside segment
     for i in inside:
