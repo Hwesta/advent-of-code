@@ -149,15 +149,16 @@ def valid_floor(floors, elevator):
     all_generators = set(t[0] for t in all_things if t[1] == 'G')
 
     unshielded_machines = all_machines - all_generators
-    unshielded_generators = all_generators - all_machines
 
-    if not unshielded_generators:
+    if not all_generators:
         return True
-    elif not unshielded_machines:
+    if not unshielded_machines:
         return True
+    if all_generators and unshielded_machines:
+        return False
 
-    # Fall through - unshielded machine & unshielded generator
-    return False
+    # Error
+    return None
 
 
 def is_done(floors):
