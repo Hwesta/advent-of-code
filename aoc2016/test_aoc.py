@@ -6,7 +6,7 @@ import unittest
 import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
-from . import day10
+from . import day10, day11
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -153,3 +153,41 @@ def test_day_10():
     ]
     assert day10.solve(data, comparing=[2, 5]) == '2'
     assert day10.solve(data) == 5*2*3
+
+@pytest.mark.parametrize('elevator,valid', [
+    ({'floor': 0, 'contains': []}, False),
+    ({'floor': 0, 'contains': ['PM']}, True),
+    ({'floor': 0, 'contains': ['PG']}, True),
+    ({'floor': 0, 'contains': ['PM', 'CM']}, True),
+    ({'floor': 0, 'contains': ['PG', 'CG']}, True),
+    ({'floor': 0, 'contains': ['PG', 'PM']}, True),
+    ({'floor': 0, 'contains': ['PG', 'CM']}, False),
+    ({'floor': 0, 'contains': ['PM', 'CM', 'UM']}, False),
+])
+def test_day_11_elevator(elevator, valid):
+    assert day11.valid_elevator(elevator) == valid
+
+@pytest.mark.parametrize('floors,elevator,valid', [
+    ([[], [], [], []], {'floor': 0, 'contains': ['RG']}, True),
+    ([[], [], [], []], {'floor': 0, 'contains': ['RM']}, True),
+    ([['RG'], [], [], []], {'floor': 0, 'contains': ['RM']}, True),
+    ([['RG', 'RM'], [], [], []], {'floor': 0, 'contains': ['PG']}, True),
+    ([['RG', 'RM'], [], [], []], {'floor': 0, 'contains': ['PM']}, True),
+    ([['RG', 'PM'], [], [], []], {'floor': 0, 'contains': ['PG']}, True),
+    ([['RG', 'PG'], [], [], []], {'floor': 0, 'contains': ['PM']}, True),
+    ([['RG'], [], [], []], {'floor': 0, 'contains': ['PM']}, False),
+    ([['PM'], [], [], []], {'floor': 0, 'contains': ['RG', 'RM']}, True),
+    ([['PG'], [], [], []], {'floor': 0, 'contains': ['RG', 'RM']}, True),
+    ([['RG', 'PG', 'CG'], [], [], []], {'floor': 0, 'contains': ['UM']}, False),
+    ([['RG', 'PG', 'CG', 'CM', 'PM'], [], [], []], {'floor': 0, 'contains': ['UM']}, False),
+])
+def test_day_11_floor(floors, elevator, valid):
+    assert day11.valid_floor(floors, elevator) == valid
+
+@pytest.mark.parametrize('floors,done', [
+    ([[], [], [], ['PG', 'PM', 'CG', 'CM', 'UG', 'UM', 'RG', 'RM', 'LG', 'LM']], True),
+    ([[], [], ['PG'], ['PM', 'CG', 'CM', 'UG', 'UM', 'RG', 'RM', 'LG', 'LM']], False),
+    ([[], [], ['PG', 'PM', 'CG', 'CM', 'UG', 'UM', 'RG', 'RM', 'LG', 'LM'], []], False),
+])
+def test_day_11_done(floors, done):
+    assert day11.is_done(floors) == done
