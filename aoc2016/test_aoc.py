@@ -170,24 +170,39 @@ def test_day_11_elevator(elevator, valid):
 @pytest.mark.parametrize('floors,elevator,valid', [
     ([[], [], [], []], {'floor': 0, 'contains': ['RG']}, True),
     ([[], [], [], []], {'floor': 0, 'contains': ['RM']}, True),
-    ([['RG'], [], [], []], {'floor': 0, 'contains': ['RM']}, True),
-    ([['RG', 'RM'], [], [], []], {'floor': 0, 'contains': ['PG']}, True),
-    ([['RG', 'RM'], [], [], []], {'floor': 0, 'contains': ['PM']}, False),
-    ([['RG', 'PM'], [], [], []], {'floor': 0, 'contains': ['PG']}, True),
-    ([['RG', 'PG'], [], [], []], {'floor': 0, 'contains': ['PM']}, True),
-    ([['RG'], [], [], []], {'floor': 0, 'contains': ['PM']}, False),
-    ([['PM'], [], [], []], {'floor': 0, 'contains': ['RG', 'RM']}, False),
-    ([['PG'], [], [], []], {'floor': 0, 'contains': ['RG', 'RM']}, True),
-    ([['RG', 'PG', 'CG'], [], [], []], {'floor': 0, 'contains': ['UM']}, False),
-    ([['RG', 'PG', 'CG', 'CM', 'PM'], [], [], []], {'floor': 0, 'contains': ['UM']}, False),
+    ([['AG'], [], [], []], {'floor': 0, 'contains': ['AM']}, True),
+    ([['AG', 'AM'], [], [], []], {'floor': 0, 'contains': ['BG']}, True),
+    ([['AG', 'AM'], [], [], []], {'floor': 0, 'contains': ['BM']}, False),
+    ([['AG', 'BM'], [], [], []], {'floor': 0, 'contains': ['BG']}, True),
+    ([['AG', 'BG'], [], [], []], {'floor': 0, 'contains': ['BM']}, True),
+    ([['AG'], [], [], []], {'floor': 0, 'contains': ['BM']}, False),
+    ([['BM'], [], [], []], {'floor': 0, 'contains': ['AG', 'AM']}, False),
+    ([['BG'], [], [], []], {'floor': 0, 'contains': ['AG', 'AM']}, True),
+    ([['AG', 'BG', 'CG'], [], [], []], {'floor': 0, 'contains': ['UM']}, False),
+    ([['AG', 'BG', 'CG', 'CM', 'BM'], [], [], []], {'floor': 0, 'contains': ['UM']}, False),
 ])
 def test_day_11_floor(floors, elevator, valid):
     assert day11.valid_floor(floors, elevator) == valid
 
 @pytest.mark.parametrize('floors,done', [
-    ([[], [], [], ['PG', 'PM', 'CG', 'CM', 'UG', 'UM', 'RG', 'RM', 'LG', 'LM']], True),
-    ([[], [], ['PG'], ['PM', 'CG', 'CM', 'UG', 'UM', 'RG', 'RM', 'LG', 'LM']], False),
-    ([[], [], ['PG', 'PM', 'CG', 'CM', 'UG', 'UM', 'RG', 'RM', 'LG', 'LM'], []], False),
+    ([[], [], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], True),
+    ([[], [], ['BG'], ['BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], False),
+    ([[], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM'], []], False),
+    ([['AG'], ['CM'], ['BG'], ['BM', 'CG', 'UG', 'UM', 'AM', 'LG', 'LM']], False),
 ])
 def test_day_11_done(floors, done):
     assert day11.is_done(floors) == done
+
+def test_day_11():
+    floors = [
+        ['AM', 'BM'],
+        ['AG'],
+        ['BG'],
+        [],
+    ]
+    assert day11.solve(floors) == 11
+
+
+
+
+

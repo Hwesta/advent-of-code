@@ -117,8 +117,75 @@ In your situation, what is the minimum number of steps required to bring all of 
 
 
 """
+from __future__ import division
 import collections
+import copy
 import os
+
+
+class TinyTree(object):
+
+    def __init__(self, value, parents=None):
+        self.value = value
+        if parents is None:
+            self.parents = []
+        else:
+            self.parents = parents
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+    def __str__(self):
+        return 'TinyTree %s' % self.value
+
+    def __repr__(self):
+        return 'TinyTree(%s, %s)' % (self.value, [str(s) for s in self.parents])
+
+    def __hash__(self):
+        return self.value
+
+    def next_state(self):
+        parents = self.parents + [self]
+        yield TinyTree(self.value // 2, parents=parents)
+        yield TinyTree(max((self.value * 2) - 1, 0), parents=parents)
+
+
+class State(object):
+
+    def __init__(self, floors, elevator, parents=None):
+        self.floors = floors
+        self.elevator = elevator
+        self.state_history = []
+        if parents is None:
+            self.parents = []
+        else:
+            self.parents = parents
+
+    def __eq__(self, other):
+        # Return true if they are equivalent - ie type-rotated
+        if self.elevator['floor'] != other.elevator['floor']:
+            return False
+        floor = self.elevator['floor']
+        # Naive - needs to check for type rotation
+        self_items = set(self.floors[floor] + self.elevator['contains'])
+        other_items = set(other.floors[floor] + other.elevator['contains'])
+        return self_items == other_items
+
+
+    def __hash__(self):
+        # So can be put in a set
+        floors = copy.deepcopy(self.floors)
+        floor = self.elevator['floor']
+        floors[floor] += self.elevator['contains'] + ['E']
+        return tuple(tuple(f) for f in floors)
+
+    def new_state(self):
+        """Generate a child state from here."""
+        # Options:
+        # Bring 1 item up
+        # Bring 2 items up
+        # Bring 1 item down
+        # Bring 2 items down
 
 def valid_elevator(elevator):
     """Check if the elevator has 0-2 items & doesn't fry anything."""
@@ -163,31 +230,48 @@ def valid_floor(floors, elevator):
 
 def is_done(floors):
     """Check if everything is on fourth floor."""
-    return set(('PG', 'PM', 'CG', 'CM', 'UG', 'UM', 'RG', 'RM', 'LG', 'LM')) == set(floors[3])
+    return len(floors[0]) + len(floors[1]) + len(floors[2]) == 0
+    # return set(('AG', 'AM', 'BG', 'BM', 'CG', 'CM', 'DG', 'DM', 'EG', 'EM')) == set(floors[3])
 
 
-def swap_something():
-    """Swap something from the elevator with this floor."""
 
 
-def solve(data, comparing=None):
-    # Promethium = P
-    # Cobalt = C
-    # Curium = U
-    # Ruthenium = R
-    # Plutonium = L
-    floor = [
-        ['PG', 'PM'],
-        ['CG', 'UG', 'RG', 'LG'],
-        ['CM', 'UM', 'RM', 'LM'],
-        [],
-    ]
+def solve(data):
+    floor = data
     elevator = {'floor': 0, 'contains': []}
+
+    queue = collections.deque()
+    starting_state =
+    queue.append(TinyTree(3))
+    ever_seen = set()
+    steps = 0
+    while queue:
+        item = queue.popleft()
+        print('popped item', item)
+        ever_seen.add(item)
+        for new_item in item.next_state():
+            print('gen item', new_item)
+            if new_item not in ever_seen:  # Check equality??
+                print('added')
+                queue.append(new_item)
+        steps += 1
+        print('queue', queue)
+        if steps > 7:
+            break
+
     return
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day11.input')) as f:
         data = f.read().splitlines()
+
+    data = [
+        ['AG', 'AM'],
+        ['BG', 'CG', 'DG', 'EG'],
+        ['BM', 'CM', 'DM', 'EM'],
+        [],
+    ]
+
 
     print(solve(data))
