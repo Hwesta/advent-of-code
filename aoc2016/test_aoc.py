@@ -185,9 +185,9 @@ def test_day_11_done(floors, done):
     ([[], [], [], []], 0, [[], [], [], []], 1, False),
     ([['AG', 'AM'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
     ([['AM', 'AG'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
-    ([['AG', 'AM'], ['BG', 'BM'], [], []], 0, [['BG', 'BM'], ['AG', 'AM'], [], []], 0, False),  # Equiv
+    ([['AG', 'AM'], ['BG', 'BM'], [], []], 0, [['BG', 'BM'], ['AG', 'AM'], [], []], 0, True),  # Equiv
     ([['AG'], ['AM'], [], []], 0, [['AG'], [], ['AM'], []], 0, False),
-    ([['AG', 'AM', 'CG'], ['BG', 'BM'], ['CM'], []], 0, [['BG', 'BM', 'AG'], ['CG', 'CM'], ['AM'], []], 0, False),  # Equiv
+    ([['AG', 'AM', 'CG'], ['BG', 'BM'], ['CM'], []], 0, [['BG', 'BM', 'AG'], ['CG', 'CM'], ['AM'], []], 0, True),  # Equiv
     ([['LM', 'HM'], ['HG'], ['LG'], []], 0, [['HM', 'LM'], ['HG'], ['LG'], []], 0, True),
 ])
 def test_day_11_state_eq(s1_floors, s1_elevator, s2_floors, s2_elevator, target):

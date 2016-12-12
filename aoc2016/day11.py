@@ -185,8 +185,7 @@ class State(object):
 
     def __hash__(self):
         # So can be put in a set
-        normalized_floors = normalize_rep(self.floors)
-        return hash(immutable_state_rep(normalized_floors, self.elevator))
+        return hash(normalize_rep(self.floors, self.elevator))
 
     def next_state(self):
         """Generate a child state from here."""
@@ -251,28 +250,23 @@ class State(object):
                         yield State(new_floors, next_floor, parents=self.parents + [self])
 
 
-def immutable_state_rep(floors, elevator):
-    floors = copy.deepcopy(floors)
-    floors[elevator] += ['E']
-    return tuple(frozenset(f) for f in floors)
-
-def normalize_rep(floors):
+def normalize_rep(floors, elevator):
     # Normalize representation - convert
     # [['BM', 'BG', 'CG'], ['CM'], ['AM', 'AG'], []]
     # to
     # [['AM', 'AG', 'BG'], ['BM'], ['CM', 'CG'], []]
-    # Does this need to be sorted first?
-    mapping = {}
-    for item in itertools.chain(*floors):
-        itemtype = item[0]
-        if itemtype not in mapping:
-            mapping[itemtype] = string.ascii_lowercase[len(mapping)]
 
-    new_floors = []
-    for floor in floors:
-        new_floors.append([mapping[item[0]] + item[1] for item in floor])
-
-    return new_floors
+    pairs = set()
+    floors = copy.deepcopy(floors)
+    # Generate pairs
+    for i, floor in enumerate(floors):
+        for item in floor:
+            if item[1] == 'M':
+                match = item[0] + "G"
+                for j, search_floor in enumerate(floors):
+                    if match in search_floor:
+                        pairs.add((i, j))
+    return (frozenset(pairs), elevator)
 
 def valid_floor(floors, elevator):
     """Nothing is fried on the floor with this elevator."""
