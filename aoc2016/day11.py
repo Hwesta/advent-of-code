@@ -117,11 +117,12 @@ In your situation, what is the minimum number of steps required to bring all of 
 
 
 """
-from __future__ import division
+from __future__ import division, print_function
 import collections
 import copy
 import itertools
 import os
+import string
 
 
 class TinyTree(object):
@@ -154,7 +155,8 @@ class TinyTree(object):
 class State(object):
 
     def __init__(self, floors, elevator, parents=None):
-        self.floors = floors
+        self.floors = [sorted(f) for f in floors]
+        # Ensure sorted
         self.elevator = elevator
         self.state_history = []
         if parents is None:
@@ -179,16 +181,12 @@ class State(object):
         if self.elevator != other.elevator:
             return False
 
-        for self_floor, other_floor in zip(self.floors, other.floors):
-            if set(self_floor) != set(other_floor):
-                return False
-        return True
+        return hash(self) == hash(other)
 
     def __hash__(self):
         # So can be put in a set
-        floors = copy.deepcopy(self.floors)
-        floors[self.elevator] += ['E']
-        return hash(tuple(frozenset(f) for f in floors))
+        normalized_floors = normalize_rep(self.floors)
+        return hash(immutable_state_rep(normalized_floors, self.elevator))
 
     def next_state(self):
         """Generate a child state from here."""
@@ -196,29 +194,10 @@ class State(object):
         # Check if below floors are empty
         empty_below = not sum(len(f) for f in self.floors[:self.elevator])
 
-        # Bring 1 item
-        for item in self.floors[self.elevator]:
-            # Up
-            next_floor = self.elevator + 1
-            if next_floor < 4:
-                new_floors = copy.deepcopy(self.floors)
-                new_floors[self.elevator].remove(item)
-                new_floors[next_floor].append(item)
-                if valid_floor(new_floors, next_floor):
-                    yield State(new_floors, next_floor, parents=self.parents + [self])
+        brought_2_up = False
+        brought_1_down = False
 
-            # Down
-            if empty_below:
-                continue
-
-            next_floor = self.elevator - 1
-            if next_floor >= 0:
-                new_floors = copy.deepcopy(self.floors)
-                new_floors[self.elevator].remove(item)
-                new_floors[next_floor].append(item)
-                if valid_floor(new_floors, next_floor):
-                    yield State(new_floors, next_floor, parents=self.parents + [self])
-        # Bring 2 items
+        # Bring 2 items up
         for i1, i2 in itertools.combinations(self.floors[self.elevator], 2):
             # Up
             next_floor = self.elevator + 1
@@ -229,7 +208,20 @@ class State(object):
                 new_floors[next_floor].append(i1)
                 new_floors[next_floor].append(i2)
                 if valid_floor(new_floors, next_floor):
+                    brought_2_up = True
                     yield State(new_floors, next_floor, parents=self.parents + [self])
+
+        # Bring 1 item up or down
+        for item in self.floors[self.elevator]:
+            # Up
+            if not brought_2_up:
+                next_floor = self.elevator + 1
+                if next_floor < 4:
+                    new_floors = copy.deepcopy(self.floors)
+                    new_floors[self.elevator].remove(item)
+                    new_floors[next_floor].append(item)
+                    if valid_floor(new_floors, next_floor):
+                        yield State(new_floors, next_floor, parents=self.parents + [self])
 
             # Down
             if empty_below:
@@ -238,13 +230,49 @@ class State(object):
             next_floor = self.elevator - 1
             if next_floor >= 0:
                 new_floors = copy.deepcopy(self.floors)
-                new_floors[self.elevator].remove(i1)
-                new_floors[self.elevator].remove(i2)
-                new_floors[next_floor].append(i1)
-                new_floors[next_floor].append(i2)
+                new_floors[self.elevator].remove(item)
+                new_floors[next_floor].append(item)
                 if valid_floor(new_floors, next_floor):
+                    brought_1_down = True
                     yield State(new_floors, next_floor, parents=self.parents + [self])
 
+        # Bring 2 items down
+        if not brought_1_down and not empty_below:
+            for i1, i2 in itertools.combinations(self.floors[self.elevator], 2):
+                # Down
+                next_floor = self.elevator - 1
+                if next_floor >= 0:
+                    new_floors = copy.deepcopy(self.floors)
+                    new_floors[self.elevator].remove(i1)
+                    new_floors[self.elevator].remove(i2)
+                    new_floors[next_floor].append(i1)
+                    new_floors[next_floor].append(i2)
+                    if valid_floor(new_floors, next_floor):
+                        yield State(new_floors, next_floor, parents=self.parents + [self])
+
+
+def immutable_state_rep(floors, elevator):
+    floors = copy.deepcopy(floors)
+    floors[elevator] += ['E']
+    return tuple(frozenset(f) for f in floors)
+
+def normalize_rep(floors):
+    # Normalize representation - convert
+    # [['BM', 'BG', 'CG'], ['CM'], ['AM', 'AG'], []]
+    # to
+    # [['AM', 'AG', 'BG'], ['BM'], ['CM', 'CG'], []]
+    # Does this need to be sorted first?
+    mapping = {}
+    for item in itertools.chain(*floors):
+        itemtype = item[0]
+        if itemtype not in mapping:
+            mapping[itemtype] = string.ascii_lowercase[len(mapping)]
+
+    new_floors = []
+    for floor in floors:
+        new_floors.append([mapping[item[0]] + item[1] for item in floor])
+
+    return new_floors
 
 def valid_floor(floors, elevator):
     """Nothing is fried on the floor with this elevator."""
@@ -278,18 +306,22 @@ def solve(data):
     ever_seen = set()
     ever_seen.add(starting_state)
     steps = 0
+    max_depth = 0
     while queue:
         item = queue.popleft()
-        print('popped item', item, len(item.parents))
+        if len(item.parents) > max_depth:
+            max_depth = len(item.parents)
+            print('max depth', max_depth)
+        # print('popped item', item, len(item.parents))
         if is_done(item.floors):
             print('FOUND VALID SOLUTION', len(item.parents), steps)
             return len(item.parents)
         ever_seen.add(item)
         for new_item in item.next_state():
-            print('gen item', new_item)
+            # print('gen item', new_item)
             if new_item not in ever_seen:
                 # print('ever seen', ever_seen)
-                print('added')
+                # print('added')
                 queue.append(new_item)
         steps += 1
         print('queue', queue)
