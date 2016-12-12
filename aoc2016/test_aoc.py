@@ -184,25 +184,24 @@ def test_day_11_done(floors, done):
     ([[], [], [], []], 0, [[], [], [], []], 0, True),
     ([[], [], [], []], 0, [[], [], [], []], 1, False),
     ([['AG', 'AM'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
+    ([['AM', 'AG'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
     ([['AG', 'AM'], ['BG', 'BM'], [], []], 0, [['BG', 'BM'], ['AG', 'AM'], [], []], 0, False),  # Equiv
     ([['AG'], ['AM'], [], []], 0, [['AG'], [], ['AM'], []], 0, False),
     ([['AG', 'AM', 'CG'], ['BG', 'BM'], ['CM'], []], 0, [['BG', 'BM', 'AG'], ['CG', 'CM'], ['AM'], []], 0, False),  # Equiv
+    ([['LM', 'HM'], ['HG'], ['LG'], []], 0, [['HM', 'LM'], ['HG'], ['LG'], []], 0, True),
 ])
 def test_day_11_state_eq(s1_floors, s1_elevator, s2_floors, s2_elevator, target):
     s1 = day11.State(s1_floors, s1_elevator)
     s2 = day11.State(s2_floors, s2_elevator)
     assert (s1 == s2) == target
 
-def test_day_11():
-    floors = [
-        ['AM', 'BM'],
-        ['AG'],
-        ['BG'],
-        [],
-    ]
-    assert day11.solve(floors) == 11
+
+@pytest.mark.parametrize('floors,steps', [
+    ([['AG'], [], [], ['AM']], 3),
+    ([['AG', 'AM'], [], [], ['BG', 'BM']], 3),
 
 
-
-
-
+    ([['HM', 'LM'], ['HG'], ['LG'], []], 11),  # Example
+])
+def test_day_11(floors, steps):
+    assert day11.solve(floors) == steps

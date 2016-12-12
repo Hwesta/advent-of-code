@@ -120,6 +120,7 @@ In your situation, what is the minimum number of steps required to bring all of 
 from __future__ import division
 import collections
 import copy
+import itertools
 import os
 
 
@@ -161,6 +162,18 @@ class State(object):
         else:
             self.parents = parents
 
+    def __str__(self):
+        return 'State: E%s F0: %s; F1: %s; F2: %s; F3: %s' % (
+            self.elevator,
+            ' '.join(self.floors[0]),
+            ' '.join(self.floors[1]),
+            ' '.join(self.floors[2]),
+            ' '.join(self.floors[3]),
+        )
+
+    def __repr__(self):
+        return 'State(%s, %s)' % (self.floors, self.elevator)
+
     def __eq__(self, other):
         # Return true if they are equivalent - ie type-rotated
         if self.elevator != other.elevator:
@@ -175,15 +188,62 @@ class State(object):
         # So can be put in a set
         floors = copy.deepcopy(self.floors)
         floors[self.elevator] += ['E']
-        return hash(tuple(tuple(f) for f in floors))
+        return hash(tuple(frozenset(f) for f in floors))
 
     def next_state(self):
         """Generate a child state from here."""
-        # Options:
-        # Bring 1 item up
-        # Bring 2 items up
-        # Bring 1 item down
-        # Bring 2 items down
+
+        # Check if below floors are empty
+        empty_below = not sum(len(f) for f in self.floors[:self.elevator])
+
+        # Bring 1 item
+        for item in self.floors[self.elevator]:
+            # Up
+            next_floor = self.elevator + 1
+            if next_floor < 4:
+                new_floors = copy.deepcopy(self.floors)
+                new_floors[self.elevator].remove(item)
+                new_floors[next_floor].append(item)
+                if valid_floor(new_floors, next_floor):
+                    yield State(new_floors, next_floor, parents=self.parents + [self])
+
+            # Down
+            if empty_below:
+                continue
+
+            next_floor = self.elevator - 1
+            if next_floor >= 0:
+                new_floors = copy.deepcopy(self.floors)
+                new_floors[self.elevator].remove(item)
+                new_floors[next_floor].append(item)
+                if valid_floor(new_floors, next_floor):
+                    yield State(new_floors, next_floor, parents=self.parents + [self])
+        # Bring 2 items
+        for i1, i2 in itertools.combinations(self.floors[self.elevator], 2):
+            # Up
+            next_floor = self.elevator + 1
+            if next_floor < 4:
+                new_floors = copy.deepcopy(self.floors)
+                new_floors[self.elevator].remove(i1)
+                new_floors[self.elevator].remove(i2)
+                new_floors[next_floor].append(i1)
+                new_floors[next_floor].append(i2)
+                if valid_floor(new_floors, next_floor):
+                    yield State(new_floors, next_floor, parents=self.parents + [self])
+
+            # Down
+            if empty_below:
+                continue
+
+            next_floor = self.elevator - 1
+            if next_floor >= 0:
+                new_floors = copy.deepcopy(self.floors)
+                new_floors[self.elevator].remove(i1)
+                new_floors[self.elevator].remove(i2)
+                new_floors[next_floor].append(i1)
+                new_floors[next_floor].append(i2)
+                if valid_floor(new_floors, next_floor):
+                    yield State(new_floors, next_floor, parents=self.parents + [self])
 
 
 def valid_floor(floors, elevator):
@@ -207,9 +267,6 @@ def valid_floor(floors, elevator):
 def is_done(floors):
     """Check if everything is on fourth floor."""
     return len(floors[0]) + len(floors[1]) + len(floors[2]) == 0
-    # return set(('AG', 'AM', 'BG', 'BM', 'CG', 'CM', 'DG', 'DM', 'EG', 'EM')) == set(floors[3])
-
-
 
 
 def solve(data):
@@ -219,22 +276,27 @@ def solve(data):
     starting_state = State(floors, 0)
     queue.append(starting_state)
     ever_seen = set()
+    ever_seen.add(starting_state)
     steps = 0
     while queue:
         item = queue.popleft()
-        print('popped item', item)
+        print('popped item', item, len(item.parents))
+        if is_done(item.floors):
+            print('FOUND VALID SOLUTION', len(item.parents), steps)
+            return len(item.parents)
         ever_seen.add(item)
         for new_item in item.next_state():
             print('gen item', new_item)
-            if new_item not in ever_seen:  # Check equality??
+            if new_item not in ever_seen:
+                # print('ever seen', ever_seen)
                 print('added')
                 queue.append(new_item)
         steps += 1
         print('queue', queue)
-        if steps > 7:
+        if steps > 1000:
+            print('too many steps')
             break
 
-    return
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
@@ -247,6 +309,5 @@ if __name__ == '__main__':
         ['BM', 'CM', 'DM', 'EM'],
         [],
     ]
-
 
     print(solve(data))
