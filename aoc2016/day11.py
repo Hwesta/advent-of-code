@@ -158,9 +158,8 @@ class State(object):
         self.floors = [sorted(f) for f in floors]
         # Ensure sorted
         self.elevator = elevator
-        self.state_history = []
         if parents is None:
-            self.parents = []
+            self.parents = 0
         else:
             self.parents = parents
 
@@ -194,9 +193,8 @@ class State(object):
         empty_below = not sum(len(f) for f in self.floors[:self.elevator])
 
         brought_2_up = False
-        brought_1_down = False
 
-        # Bring 2 items up
+        # Bring 2 items up/down
         for i1, i2 in itertools.combinations(self.floors[self.elevator], 2):
             # Up
             next_floor = self.elevator + 1
@@ -208,7 +206,21 @@ class State(object):
                 new_floors[next_floor].append(i2)
                 if valid_floor(new_floors, next_floor):
                     brought_2_up = True
-                    yield State(new_floors, next_floor, parents=self.parents + [self])
+                    yield State(new_floors, next_floor, parents=self.parents + 1)
+
+            if empty_below:
+                continue
+
+            # Down
+            next_floor = self.elevator - 1
+            if next_floor >= 0:
+                new_floors = copy.deepcopy(self.floors)
+                new_floors[self.elevator].remove(i1)
+                new_floors[self.elevator].remove(i2)
+                new_floors[next_floor].append(i1)
+                new_floors[next_floor].append(i2)
+                if valid_floor(new_floors, next_floor):
+                    yield State(new_floors, next_floor, parents=self.parents + 1)
 
         # Bring 1 item up or down
         for item in self.floors[self.elevator]:
@@ -220,7 +232,7 @@ class State(object):
                     new_floors[self.elevator].remove(item)
                     new_floors[next_floor].append(item)
                     if valid_floor(new_floors, next_floor):
-                        yield State(new_floors, next_floor, parents=self.parents + [self])
+                        yield State(new_floors, next_floor, parents=self.parents + 1)
 
             # Down
             if empty_below:
@@ -232,22 +244,7 @@ class State(object):
                 new_floors[self.elevator].remove(item)
                 new_floors[next_floor].append(item)
                 if valid_floor(new_floors, next_floor):
-                    # brought_1_down = True
-                    yield State(new_floors, next_floor, parents=self.parents + [self])
-
-        # Bring 2 items down
-        if not brought_1_down and not empty_below:
-            for i1, i2 in itertools.combinations(self.floors[self.elevator], 2):
-                # Down
-                next_floor = self.elevator - 1
-                if next_floor >= 0:
-                    new_floors = copy.deepcopy(self.floors)
-                    new_floors[self.elevator].remove(i1)
-                    new_floors[self.elevator].remove(i2)
-                    new_floors[next_floor].append(i1)
-                    new_floors[next_floor].append(i2)
-                    if valid_floor(new_floors, next_floor):
-                        yield State(new_floors, next_floor, parents=self.parents + [self])
+                    yield State(new_floors, next_floor, parents=self.parents + 1)
 
 
 def normalize_rep(floors, elevator):
@@ -303,13 +300,13 @@ def solve(data):
     max_depth = 0
     while queue:
         item = queue.popleft()
-        if len(item.parents) > max_depth:
-            max_depth = len(item.parents)
+        if item.parents > max_depth:
+            max_depth = item.parents
             print('max depth', max_depth, 'states', steps, 'len q', len(queue))
-        # print('popped item', item, len(item.parents))
+        # print('popped item', item, item.parents)
         if is_done(item.floors):
-            print('FOUND VALID SOLUTION', len(item.parents), steps)
-            return len(item.parents)
+            print('FOUND VALID SOLUTION', item.parents, steps)
+            return item.parents
         ever_seen.add(item)
         for new_item in item.next_state():
             # print('gen item', new_item)
