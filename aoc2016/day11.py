@@ -205,7 +205,7 @@ class State(object):
                 new_floors[self.elevator].remove(i2)
                 new_floors[next_floor].append(i1)
                 new_floors[next_floor].append(i2)
-                if valid_floor(new_floors, next_floor):
+                if valid_floor(new_floors):
                     brought_2_up = True
                     yield State(new_floors, next_floor, parents=self.parents + 1)
 
@@ -220,7 +220,7 @@ class State(object):
                 new_floors[self.elevator].remove(i2)
                 new_floors[next_floor].append(i1)
                 new_floors[next_floor].append(i2)
-                if valid_floor(new_floors, next_floor):
+                if valid_floor(new_floors):
                     yield State(new_floors, next_floor, parents=self.parents + 1)
 
         # Bring 1 item up or down
@@ -232,7 +232,7 @@ class State(object):
                     new_floors = copy.deepcopy(self.floors)
                     new_floors[self.elevator].remove(item)
                     new_floors[next_floor].append(item)
-                    if valid_floor(new_floors, next_floor):
+                    if valid_floor(new_floors):
                         yield State(new_floors, next_floor, parents=self.parents + 1)
 
             # Down
@@ -244,7 +244,7 @@ class State(object):
                 new_floors = copy.deepcopy(self.floors)
                 new_floors[self.elevator].remove(item)
                 new_floors[next_floor].append(item)
-                if valid_floor(new_floors, next_floor):
+                if valid_floor(new_floors):
                     yield State(new_floors, next_floor, parents=self.parents + 1)
 
 
@@ -266,22 +266,19 @@ def normalize_rep(floors, elevator):
                         pairs.add((i, j))
     return (frozenset(pairs), elevator)
 
-def valid_floor(floors, elevator):
-    """Nothing is fried on the floor with this elevator."""
-    all_machines = set(t[0] for t in floors[elevator] if t[1] == 'M')
-    all_generators = set(t[0] for t in floors[elevator] if t[1] == 'G')
+def valid_floor(floors):
+    for floor in floors:
+        """Nothing is fried on the floor with this elevator."""
+        all_machines = set(t[0] for t in floor if t[1] == 'M')
+        all_generators = set(t[0] for t in floor if t[1] == 'G')
 
-    unshielded_machines = all_machines - all_generators
+        unshielded_machines = all_machines - all_generators
 
-    if not all_generators:
-        return True
-    if not unshielded_machines:
-        return True
-    if all_generators and unshielded_machines:
-        return False
+        if all_generators and unshielded_machines:
+            return False
 
-    # Error
-    return None
+    # Nothing in valid - all are valid
+    return True
 
 
 def is_done(floors):

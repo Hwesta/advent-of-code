@@ -155,21 +155,19 @@ def test_day_10():
     assert day10.solve(data) == 5*2*3
 
 
-@pytest.mark.parametrize('floors,elevator,valid', [
-    ([[], [], [], []], 0, True),
-    ([['AG'], [], [], []], 0, True),
-    ([['AM'], [], [], []], 0, True),
-    ([['AG', 'AM'], [], [], []], 0, True),
-    ([['AG', 'BG'], [], [], []], 0, True),
-    ([['AM', 'BM'], [], [], []], 0, True),
-    ([['AG', 'BM'], [], [], []], 0, False),
-    ([['AG', 'AM', 'BG'], [], [], []], 0, True),
-    ([['AG', 'AM', 'BM'], [], [], []], 0, False),
-    ([['AG', 'BG', 'CG', 'DM'], [], [], []], 0, False),
-    ([['AG', 'BG', 'CG', 'BM', 'CM', 'DM'], [], [], []], 0, False),
+@pytest.mark.parametrize('floors,valid', [
+    ([[], [], [], []], True),
+    ([['AM'], [], ['AG'], []], True),
+    ([['AG', 'AM'], [], ['BG', 'BM'], []], True),
+    ([['AG', 'BG'], ['BM', 'AM'], [], []], True),
+    ([['AG', 'AM', 'BG'], [], ['BM'], []], True),
+    ([['AG', 'BM'], [], [], ['AM', 'BG']], False),
+    ([['AG', 'AM', 'BM'], [], ['BG'], []], False),
+    ([['AG', 'BG', 'CG', 'DM'], [], ['DG'], ['AM', 'BM', 'CM']], False),
+    ([['AG', 'BG', 'CG', 'BM', 'CM', 'DM'], [], ['DG'], ['AM']], False),
 ])
-def test_day_11_floor(floors, elevator, valid):
-    assert day11.valid_floor(floors, elevator) == valid
+def test_day_11_floor(floors, valid):
+    assert day11.valid_floor(floors) == valid
 
 @pytest.mark.parametrize('floors,done', [
     ([[], [], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], True),
