@@ -159,7 +159,7 @@ class State(object):
         # Ensure sorted
         self.elevator = elevator
         if parents is None:
-            self.parents = 0
+            self.parents = []
         else:
             self.parents = parents
         self.priority = priority(floors)
@@ -194,8 +194,9 @@ class State(object):
         empty_below = not sum(len(f) for f in self.floors[:self.elevator])
 
         brought_2_up = False
+        brought_1_down = False
 
-        # Bring 2 items up/down
+        # Bring 2 items up
         for i1, i2 in itertools.combinations(self.floors[self.elevator], 2):
             # Up
             next_floor = self.elevator + 1
@@ -207,7 +208,7 @@ class State(object):
                 new_floors[next_floor].append(i2)
                 if valid_floor(new_floors):
                     brought_2_up = True
-                    yield State(new_floors, next_floor, parents=self.parents + 1)
+                    yield State(new_floors, next_floor, parents=self.parents + [self])
 
             if empty_below:
                 continue
@@ -221,7 +222,7 @@ class State(object):
                 new_floors[next_floor].append(i1)
                 new_floors[next_floor].append(i2)
                 if valid_floor(new_floors):
-                    yield State(new_floors, next_floor, parents=self.parents + 1)
+                    yield State(new_floors, next_floor, parents=self.parents + [self])
 
         # Bring 1 item up or down
         for item in self.floors[self.elevator]:
@@ -233,7 +234,7 @@ class State(object):
                     new_floors[self.elevator].remove(item)
                     new_floors[next_floor].append(item)
                     if valid_floor(new_floors):
-                        yield State(new_floors, next_floor, parents=self.parents + 1)
+                        yield State(new_floors, next_floor, parents=self.parents + [self])
 
             # Down
             if empty_below:
@@ -245,7 +246,7 @@ class State(object):
                 new_floors[self.elevator].remove(item)
                 new_floors[next_floor].append(item)
                 if valid_floor(new_floors):
-                    yield State(new_floors, next_floor, parents=self.parents + 1)
+                    yield State(new_floors, next_floor, parents=self.parents + [self])
 
 
 def normalize_rep(floors, elevator):
@@ -306,13 +307,13 @@ def solve(data):
     max_depth = 0
     while queue:
         priority, item = heapq.heappop(queue)
-        if item.parents > max_depth:
-            max_depth = item.parents
+        if len(item.parents) > max_depth:
+            max_depth = len(item.parents)
             print('max depth', max_depth, 'states', steps, 'len q', len(queue))
-        # print('popped item', item, item.parents)
+        # print('popped item', item, len(item.parents))
         if is_done(item.floors):
-            print('FOUND VALID SOLUTION', item.parents, steps)
-            return item.parents
+            print('FOUND VALID SOLUTION', len(item.parents), steps)
+            return len(item.parents)
         ever_seen.add(item)
         for new_item in item.next_state():
             if new_item not in ever_seen:
