@@ -6,7 +6,7 @@ import unittest
 import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
-from . import day10, day11
+from . import day10, day11, day12
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -203,3 +203,14 @@ def test_day_11_state_eq(s1_floors, s1_elevator, s2_floors, s2_elevator, target)
 ])
 def test_day_11(floors, steps):
     assert day11.solve(floors) == steps
+
+def test_day_12():
+    instruction_set = [
+        'cpy 41 a',
+        'inc a',
+        'inc a',
+        'dec a',
+        'jnz a 2',
+        'dec a',
+    ]
+    assert day12.solve(instruction_set)['a'] == 42
