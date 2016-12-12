@@ -232,7 +232,7 @@ class State(object):
                 new_floors[self.elevator].remove(item)
                 new_floors[next_floor].append(item)
                 if valid_floor(new_floors, next_floor):
-                    brought_1_down = True
+                    # brought_1_down = True
                     yield State(new_floors, next_floor, parents=self.parents + [self])
 
         # Bring 2 items down
@@ -305,7 +305,7 @@ def solve(data):
         item = queue.popleft()
         if len(item.parents) > max_depth:
             max_depth = len(item.parents)
-            print('max depth', max_depth)
+            print('max depth', max_depth, 'states', steps, 'len q', len(queue))
         # print('popped item', item, len(item.parents))
         if is_done(item.floors):
             print('FOUND VALID SOLUTION', len(item.parents), steps)
@@ -318,11 +318,8 @@ def solve(data):
                 # print('added')
                 queue.append(new_item)
         steps += 1
-        print('queue', queue)
-        if steps > 1000:
-            print('too many steps')
-            break
-
+    print('fallthrough')
+    return None
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)

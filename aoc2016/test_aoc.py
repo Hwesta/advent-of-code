@@ -199,8 +199,6 @@ def test_day_11_state_eq(s1_floors, s1_elevator, s2_floors, s2_elevator, target)
 @pytest.mark.parametrize('floors,steps', [
     ([['AG'], [], [], ['AM']], 3),
     ([['AG', 'AM'], [], [], ['BG', 'BM']], 3),
-
-
     ([['HM', 'LM'], ['HG'], ['LG'], []], 11),  # Example
 ])
 def test_day_11(floors, steps):
