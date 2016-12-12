@@ -121,8 +121,8 @@ from __future__ import division, print_function
 import collections
 import copy
 import itertools
+import heapq
 import os
-import string
 
 
 class TinyTree(object):
@@ -162,6 +162,7 @@ class State(object):
             self.parents = 0
         else:
             self.parents = parents
+        self.priority = priority(floors)
 
     def __str__(self):
         return 'State: E%s F0: %s; F1: %s; F2: %s; F3: %s' % (
@@ -288,18 +289,26 @@ def is_done(floors):
     return len(floors[0]) + len(floors[1]) + len(floors[2]) == 0
 
 
+def priority(floors):
+    priority = 0
+    for i, floor in enumerate(floors):
+        priority += (3 - i) * len(floor)
+    return priority
+
+
 def solve(data):
     floors = data
 
     queue = collections.deque()
+    queue = []
     starting_state = State(floors, 0)
-    queue.append(starting_state)
+    heapq.heappush(queue, (starting_state.priority, starting_state))
     ever_seen = set()
     ever_seen.add(starting_state)
     steps = 0
     max_depth = 0
     while queue:
-        item = queue.popleft()
+        priority, item = heapq.heappop(queue)
         if item.parents > max_depth:
             max_depth = item.parents
             print('max depth', max_depth, 'states', steps, 'len q', len(queue))
@@ -309,13 +318,13 @@ def solve(data):
             return item.parents
         ever_seen.add(item)
         for new_item in item.next_state():
-            # print('gen item', new_item)
             if new_item not in ever_seen:
+                # print('gen item', new_item)
                 # print('ever seen', ever_seen)
                 # print('added')
-                queue.append(new_item)
+                heapq.heappush(queue, (new_item.priority, new_item))
         steps += 1
-    print('fallthrough')
+    print('fallthrough', steps)
     return None
 
 if __name__ == '__main__':

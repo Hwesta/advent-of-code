@@ -195,6 +195,14 @@ def test_day_11_state_eq(s1_floors, s1_elevator, s2_floors, s2_elevator, target)
     s2 = day11.State(s2_floors, s2_elevator)
     assert (s1 == s2) == target
 
+@pytest.mark.parametrize('floors,priority', [
+    ([['AG', 'AM'], [], [], []], 6),
+    ([['LM', 'HM'], ['HG'], ['LG'], []], 9),
+    ([[], [], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], 0),
+    ([[], [], ['BG'], ['BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], 1),
+])
+def test_day_11_priority(floors, priority):
+    assert day11.priority(floors) == priority
 
 @pytest.mark.parametrize('floors,steps', [
     ([['AG'], [], [], ['AM']], 3),
