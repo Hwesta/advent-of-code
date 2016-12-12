@@ -330,11 +330,32 @@ if __name__ == '__main__':
     with open(os.path.join(this_dir, 'day11.input')) as f:
         data = f.read().splitlines()
 
-    data = [
+    # Fails
+    data = [  # Holly
         ['AG', 'AM'],
         ['BG', 'CG', 'DG', 'EG'],
         ['BM', 'CM', 'DM', 'EM'],
         [],
     ]
+    data = [
+        ['AG', 'AM', 'BG', 'CG'],
+        ['BM', 'CM'],
+        ['DG', 'DM', 'EG', 'EM'],
+        [],
+    ]  # 31
+
+    # Works
+    data = [
+        ['AG', 'BG', 'BM', 'CG', 'DG', 'DM', 'EG', 'EM'],
+        ['AM', 'CM'],
+        [],
+        [],
+    ]  # 47
+    data = [
+        ['AM', 'AG', 'BM', 'BG'],
+        ['CM', 'CG', 'DM', 'DG', 'EG'],
+        ['EM'],
+        [],
+    ]  # 37
 
     print(solve(data))
