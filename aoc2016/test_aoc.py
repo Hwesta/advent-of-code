@@ -6,7 +6,7 @@ import unittest
 import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
-from . import day10, day11, day12
+from . import day10, day11, day12, day13
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -220,3 +220,38 @@ def test_day_12():
         'dec a',
     ]
     assert day12.solve(instruction_set)['a'] == 42
+
+@pytest.mark.parametrize('x,y,fav_num,open', [
+    (0, 0, 10, True),
+    (1, 0, 10, False),
+    (2, 0, 10, True),
+    (3, 0, 10, False),
+    (4, 0, 10, False),
+    (0, 1, 10, True),
+    (0, 2, 10, False),
+    (0, 3, 10, False),
+    (0, 4, 10, True),
+    (6, 5, 10, True),
+])
+def test_day_13_is_open(x, y, fav_num, open):
+    assert day13.is_open(x, y, fav_num) == open
+
+@pytest.mark.parametrize('x,y,goal,priority', [
+    (1, 1, (2,2), 2),
+    (1, 1, (7,4), 9),
+])
+def test_day_13_priority(x, y, goal, priority):
+    assert day13.priority(x, y, goal) == priority
+
+@pytest.mark.parametrize('x1,y1,x2,y2,target', [
+    (1,1, 1,1, True),
+    (1,1, 1,2, False)
+])
+def test_day_13_state_eq(x1, y1, x2, y2, target):
+    day13.State.GOAL = 7, 4
+    s1 = day13.State(x1, y1)
+    s2 = day13.State(x2, y2)
+    assert (s1 == s2) == target
+
+def test_day_13():
+    assert day13.solve(10, (7,4)) == 11
