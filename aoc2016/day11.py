@@ -120,9 +120,14 @@ In your situation, what is the minimum number of steps required to bring all of 
 from __future__ import division, print_function
 import collections
 import copy
+import functools
 import itertools
 import heapq
 import os
+
+
+PRIORITY_Q = False
+EQUIV_FUNC = False
 
 
 class TinyTree(object):
@@ -152,6 +157,7 @@ class TinyTree(object):
         yield TinyTree(max((self.value * 2) - 1, 0), parents=parents)
 
 
+@functools.total_ordering
 class State(object):
 
     def __init__(self, floors, elevator, parents=None):
@@ -183,9 +189,17 @@ class State(object):
 
         return hash(self) == hash(other)
 
+    def __lt__(self, other):
+        return (self.priority, hash(self)) < (other.priority, hash(other))
+
     def __hash__(self):
         # So can be put in a set
-        return hash(normalize_rep(self.floors, self.elevator))
+        if EQUIV_FUNC:
+            return hash(normalize_rep(self.floors, self.elevator))
+        else:
+            floors = copy.deepcopy(self.floors)
+            floors[self.elevator] += ['E']
+            return hash(tuple(frozenset(f) for f in floors))
 
     def next_state(self):
         """Generate a child state from here."""
@@ -194,7 +208,6 @@ class State(object):
         empty_below = not sum(len(f) for f in self.floors[:self.elevator])
 
         brought_2_up = False
-        brought_1_down = False
 
         # Bring 2 items up
         for i1, i2 in itertools.combinations(self.floors[self.elevator], 2):
@@ -297,16 +310,24 @@ def priority(floors):
 def solve(data):
     floors = data
 
-    queue = collections.deque()
-    queue = []
     starting_state = State(floors, 0)
-    heapq.heappush(queue, (starting_state.priority, starting_state))
+
+    if PRIORITY_Q:
+        queue = []
+        heapq.heappush(queue, (starting_state.priority, starting_state))
+    else:
+        queue = collections.deque()
+        queue.append(starting_state)
     ever_seen = set()
     ever_seen.add(starting_state)
     steps = 0
     max_depth = 0
     while queue:
-        priority, item = heapq.heappop(queue)
+        if PRIORITY_Q:
+            _, item = heapq.heappop(queue)
+        else:
+            item = queue.popleft()
+
         if len(item.parents) > max_depth:
             max_depth = len(item.parents)
             print('max depth', max_depth, 'states', steps, 'len q', len(queue))
@@ -320,7 +341,10 @@ def solve(data):
                 # print('gen item', new_item)
                 # print('ever seen', ever_seen)
                 # print('added')
-                heapq.heappush(queue, (new_item.priority, new_item))
+                if PRIORITY_Q:
+                    heapq.heappush(queue, (new_item.priority, new_item))
+                else:
+                    queue.append(new_item)
         steps += 1
     print('fallthrough', steps)
     return None
