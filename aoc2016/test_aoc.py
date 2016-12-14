@@ -6,7 +6,7 @@ import unittest
 import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
-from . import day10, day11, day12, day13
+from . import day10, day11, day12, day13, day14
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -253,5 +253,9 @@ def test_day_13_state_eq(x1, y1, x2, y2, target):
     s2 = day13.State(x2, y2)
     assert (s1 == s2) == target
 
+@unittest.skip('too slow')
 def test_day_13():
     assert day13.solve(10, (7,4)) == 11
+
+def test_day_14():
+    assert day14.solve('abc') == 22728
