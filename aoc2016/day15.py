@@ -39,25 +39,27 @@ from __future__ import print_function
 import os
 
 def rotate(disc, time):
-    return (disc['start_pos'] + time) % disc['positions'] == 0
+    return (disc['start_pos'] + time + disc['index']) % disc['positions'] == 0
 
 def solve(data, extra_disc=False):
     discs = []
     for row in data:
         row = row.strip('.').split()
-        discs.append({'positions': int(row[3]), 'start_pos': int(row[-1]), 'id': row[1][1:]})
+        discs.append({
+            'positions': int(row[3]),
+            'start_pos': int(row[-1]),
+            'index': int(row[1][1:])
+        })
 
     if extra_disc:
-        discs.append({'positions': 11, 'start_pos': 0})
+        discs.append({'positions': 11, 'start_pos': 0, 'index': len(discs) + 1})
 
     time = 0
     while True:
-        checktime = time + 1
         for disc in discs:
-            if not rotate(disc, checktime):
+            if not rotate(disc, time):
                 break
-            checktime += 1
-        else:
+        else:  # no break
             return time
         time += 1
 
