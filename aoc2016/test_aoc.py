@@ -6,7 +6,7 @@ import unittest
 import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
-from . import day10, day11, day12, day13, day14
+from . import day10, day11, day12, day13, day14, day15
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -259,3 +259,10 @@ def test_day_13():
 
 def test_day_14():
     assert day14.solve('abc') == 22728
+
+def test_day_15():
+    assert day15.solve([
+        'Disc #1 has 5 positions; at time=0, it is at position 4.',
+        'Disc #2 has 2 positions; at time=0, it is at position 1.',
+
+    ]) == 5
