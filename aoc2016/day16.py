@@ -61,9 +61,8 @@ import os
 
 
 def dragon_curve(data):
-    data = list(data)
-    rev_data = ['0' if x == '1' else '1' for x in reversed(data)]
-    return ''.join(data + ['0'] + rev_data)
+    rev_data = ''.join('0' if x == '1' else '1' for x in reversed(data))
+    return data + '0' + rev_data
 
 def calc_checksum(data):
     checksum = []
