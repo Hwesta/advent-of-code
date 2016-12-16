@@ -6,7 +6,7 @@ import unittest
 import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
-from . import day10, day11, day12, day13, day14, day15
+from . import day10, day11, day12, day13, day14, day15, day16
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -266,3 +266,22 @@ def test_day_15():
         'Disc #2 has 2 positions; at time=0, it is at position 1.',
 
     ]) == 5
+
+@pytest.mark.parametrize('data,target', [
+    ('1', '100'),
+    ('0', '001'),
+    ('11111', '11111000000'),
+    ('111100001010', '1111000010100101011110000'),
+])
+def test_day_16_dragon_curve(data, target):
+    assert day16.dragon_curve(data) == target
+
+@pytest.mark.parametrize('data,target', [
+    ('10000011110010000111', '0111110101'),
+    ('0111110101', '01100'),
+])
+def test_day_16_checksum(data, target):
+    assert day16.calc_checksum(data) == target
+
+def test_day_16():
+    assert day16.solve('10000', 20) == '01100'
