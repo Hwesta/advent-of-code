@@ -51,8 +51,8 @@ What is the length of the longest path that reaches the vault?
 """
 from __future__ import print_function
 
+import collections
 import hashlib
-import heapq
 import os
 
 
@@ -69,7 +69,7 @@ class State(object):
         self.priority = priority(x, y, path)
 
     def __repr__(self):
-        return 'State(%s, %s)' % (self.x, self.y, self.path)
+        return 'State(%s, %s, %s)' % (self.x, self.y, self.path)
 
     def __eq__(self, other):
         return hash(self) == hash(other)
@@ -82,7 +82,7 @@ class State(object):
         if self.LONGEST and (self.x, self.y) == (3, 3):
             return
         moves = [(0, -1, 'U'), (0, 1, 'D'), (-1, 0, 'L'), (1, 0, 'R')]
-        checksum = hashlib.md5(self.PASSCODE + self.path)
+        checksum = hashlib.md5((self.PASSCODE + self.path).encode('utf8'))
         open_map = [c in ('bcdef') for c in checksum.hexdigest()[:4]]
 
         for is_open, move in zip(open_map, moves):
@@ -105,16 +105,16 @@ def solve(data, longest=False):
     State.LONGEST = longest
     goal = (3, 3)
     # Search
-    queue = []
+    queue = collections.deque()
     starting_state = State(0, 0)
-    heapq.heappush(queue, (starting_state.priority, starting_state))
+    queue.append(starting_state)
 
     states = 0
     max_depth = 0
     max_len = 0
     num_valid_paths = 0
     while queue:
-        _, item = heapq.heappop(queue)
+        item = queue.popleft()
         if len(item.path) > max_depth:
             max_depth = len(item.path)
             # print('max depth', max_depth, 'states', states, 'len q', len(queue))
@@ -126,7 +126,7 @@ def solve(data, longest=False):
                 max_len = max(len(item.path), max_len)
                 num_valid_paths += 1
         for new_item in item.next_state():
-            heapq.heappush(queue, (new_item.priority, new_item))
+            queue.append(new_item)
         states += 1
 
     if longest:
