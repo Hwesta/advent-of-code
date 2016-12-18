@@ -63,31 +63,21 @@ import os
 
 
 def tile_state(left, center, right):
-    if left == '^' and center == '^' and right == '.':
-        return '^'
-    if left == '.' and center == '^' and right == '^':
-        return '^'
-    if left == '^' and center == '.' and right == '.':
-        return '^'
-    if left == '.' and center == '.' and right == '^':
+    if left != right:
         return '^'
     return '.'
 
 def solve(data, height=40):
-    data = list(data)
-    rows = []
-
+    row = list(data)
     safe = data.count('.')
-    rows.append(data)
-    # print(data)
-    for i in range(1, height):
-        row = rows[i - 1]
+
+    for _ in range(1, height):
         new_row = []
-        for l, c, r in zip(['.'] + row, row, row[1:] + ['.']):
+        for l, c, r in zip(['.'] + row[:-1], row, row[1:] + ['.']):
             new_row.append(tile_state(l, c, r))
-        rows.append(new_row)
-        # print(new_row)
         safe += new_row.count('.')
+
+        row = new_row
 
     return safe
 
