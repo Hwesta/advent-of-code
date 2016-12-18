@@ -6,7 +6,7 @@ import unittest
 import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
-from . import day10, day11, day12, day13, day14, day15, day16, day17
+from . import day10, day11, day12, day13, day14, day15, day16, day17, day18
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -297,3 +297,10 @@ def test_day_16():
 ])
 def test_day_17(passcode, path, longest):
     assert day17.solve(passcode, longest=longest) == path
+
+@pytest.mark.parametrize('startrow,num_row,num_safe', [
+    ('..^^.', 3, 6),
+    ('.^^.^.^^^^', 10, 38),
+])
+def test_day_18(startrow, num_row, num_safe):
+    assert day18.solve(startrow, num_row) == num_safe
