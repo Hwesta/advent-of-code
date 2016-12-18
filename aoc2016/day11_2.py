@@ -120,7 +120,6 @@ In your situation, what is the minimum number of steps required to bring all of 
 from __future__ import division, print_function
 import collections
 import copy
-import functools
 import itertools
 import heapq
 import os
@@ -238,11 +237,15 @@ class State(object):
                     yield State(new_floors, new_elevator, parents=self.parents + [self])
 
 
-def solve(data):
+def solve(data, extras=False):
     State.EQUIV_FUNC = EQUIV_FUNC
     print('rotational equivalence', State.EQUIV_FUNC)
     # Search
+    if extras:
+        print('Add extras')
+        data[0] += ['YG', 'YM', 'ZG', 'ZM']
     starting_state = State(floors=data, elevator=0)
+    print('starting state', starting_state)
 
     if PRIORITY_Q:
         print('priority q')
@@ -263,7 +266,7 @@ def solve(data):
             _, item = heapq.heappop(queue)
         else:
             item = queue.popleft()
-        print('popped', item)
+        # print('popped', item)
         if len(item.parents) > max_depth:
             max_depth = len(item.parents)
             print('max depth', max_depth, 'states', states, 'len q', len(queue))
@@ -272,7 +275,7 @@ def solve(data):
             return len(item.parents)
         for new_item in item.next_state():
             if new_item not in ever_seen:
-                print('added', new_item)
+                # print('added', new_item)
                 if PRIORITY_Q:
                     heapq.heappush(queue, (new_item.priority, new_item))
                 else:
@@ -288,12 +291,30 @@ if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day11.input')) as f:
         data = f.read()
-    data = [  # Holly
+    data = [
         ['AG', 'AM'],
         ['BG', 'CG', 'DG', 'EG'],
         ['BM', 'CM', 'DM', 'EM'],
         [],
     ]
+    # data = [
+    #     ['AG', 'AM', 'BG', 'CG'],
+    #     ['BM', 'CM'],
+    #     ['DG', 'DM', 'EG', 'EM'],
+    #     [],
+    # ]  # 31
+    # data = [
+    #     ['AG', 'BG', 'BM', 'CG', 'DG', 'DM', 'EG', 'EM'],
+    #     ['AM', 'CM'],
+    #     [],
+    #     [],
+    # ]  # 47
+    # data = [
+    #     ['AM', 'AG', 'BM', 'BG'],
+    #     ['CM', 'CG', 'DM', 'DG', 'EG'],
+    #     ['EM'],
+    #     [],
+    # ]  # 37
 
-    solve(data)
-
+    # Took 24 mins & ~8 GB RAM
+    print(solve(data, extras=True))
