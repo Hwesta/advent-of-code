@@ -181,11 +181,19 @@ class State(object):
 
     def next_state(self):
         """Generate a child state from here."""
+        # Don't move into empty floors below
+        empty_below = -1
+        for i, floor in enumerate(self.floors):
+            if not floor:
+                empty_below = i
+            else:
+                break
+
         # Move 2 items
         for item, item2 in itertools.combinations(self.floors[self.elevator], 2):
             for dx in (1, -1):
                 new_elevator = self.elevator + dx
-                if new_elevator not in range(4):
+                if new_elevator not in range(4) or new_elevator <= empty_below:
                     continue
                 # Move item
                 new_floors = copy.deepcopy(self.floors)
@@ -199,7 +207,7 @@ class State(object):
         for item in self.floors[self.elevator]:
             for dx in (1, -1):
                 new_elevator = self.elevator + dx
-                if new_elevator not in range(4):
+                if new_elevator not in range(4) or new_elevator <= empty_below:
                     continue
                 # Move item
                 new_floors = copy.deepcopy(self.floors)
