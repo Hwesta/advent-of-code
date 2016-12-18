@@ -270,7 +270,6 @@ def solve(data):
         if is_done(item.floors, item.elevator):
             print('The number of steps to move everything is', len(item.parents))
             return len(item.parents)
-        ever_seen.add(item)
         for new_item in item.next_state():
             if new_item not in ever_seen:
                 print('added', new_item)
@@ -278,6 +277,7 @@ def solve(data):
                     heapq.heappush(queue, (new_item.priority, new_item))
                 else:
                     queue.append(new_item)
+            ever_seen.add(new_item)
         states += 1
 
     print('fallthrough')
