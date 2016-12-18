@@ -125,6 +125,7 @@ import itertools
 import heapq
 import os
 
+PRIORITY_Q = False
 
 def priority(floors, elevator):
     """Priority for a State."""
@@ -210,9 +211,16 @@ class State(object):
 
 def solve(data):
     # Search
-    queue = []
     starting_state = State(floors=data, elevator=0)
-    heapq.heappush(queue, (starting_state.priority, starting_state))
+
+    if PRIORITY_Q:
+        print('priority q')
+        queue = []
+        heapq.heappush(queue, (starting_state.priority, starting_state))
+    else:
+        print('deque')
+        queue = collections.deque()
+        queue.append(starting_state)
 
     ever_seen = set()
     ever_seen.add(starting_state)
@@ -220,8 +228,11 @@ def solve(data):
     states = 0
     max_depth = 0
     while queue:
-        _, item = heapq.heappop(queue)
-        # print('popped', item)
+        if PRIORITY_Q:
+            _, item = heapq.heappop(queue)
+        else:
+            item = queue.popleft()
+        print('popped', item)
         if len(item.parents) > max_depth:
             max_depth = len(item.parents)
             print('max depth', max_depth, 'states', states, 'len q', len(queue))
@@ -231,8 +242,11 @@ def solve(data):
         ever_seen.add(item)
         for new_item in item.next_state():
             if new_item not in ever_seen:
-                # print('added', new_item)
-                heapq.heappush(queue, (new_item.priority, new_item))
+                print('added', new_item)
+                if PRIORITY_Q:
+                    heapq.heappush(queue, (new_item.priority, new_item))
+                else:
+                    queue.append(new_item)
         states += 1
 
     print('fallthrough')

@@ -210,6 +210,7 @@ def test_day_11_priority(floors, elevator, priority):
     ([['AG'], [], [], ['AM']], 3),
     ([['AG', 'AM'], [], [], ['BG', 'BM']], 3),
     ([['HM', 'LM'], ['HG'], ['LG'], []], 11),  # Example
+    ([['AG', 'AM', 'BG', 'BM'], [], [], []], 15),
 ])
 def test_day_11(floors, steps):
     assert day11.solve(floors) == steps
