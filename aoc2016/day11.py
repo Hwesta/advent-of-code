@@ -322,4 +322,5 @@ if __name__ == '__main__':
     # ]  # 37
 
     # Took 24 mins & ~8 GB RAM
-    print(solve(data, extras=True))
+    print('It takes', solve(data), 'steps to move all 10 items to the top floor.')
+    # print('It takes', solve(data, extras=True), 'steps to move all 14 items to the top floor.')
