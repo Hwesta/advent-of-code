@@ -8,6 +8,9 @@ import pytest
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
 from . import day10, day11, day12, day13, day14, day15, day16, day17, day18
 
+from . import day11_2 as day11
+
+
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
     ('R2, R2, R2', 2, False),
@@ -167,40 +170,41 @@ def test_day_10():
     ([['AG', 'BG', 'CG', 'BM', 'CM', 'DM'], [], ['DG'], ['AM']], False),
 ])
 def test_day_11_floor(floors, valid):
-    assert day11.valid_floor(floors) == valid
+    assert day11.valid_state(floors) == valid
 
-@pytest.mark.parametrize('floors,done', [
-    ([[], [], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], True),
-    ([[], [], ['BG'], ['BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], False),
-    ([[], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM'], []], False),
-    ([['AG'], ['CM'], ['BG'], ['BM', 'CG', 'UG', 'UM', 'AM', 'LG', 'LM']], False),
+@pytest.mark.parametrize('floors,elevator,done', [
+    ([[], [], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], 3, True),
+    ([[], [], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], 2, False),
+    ([[], [], ['BG'], ['BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], 3, False),
+    ([[], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM'], []], 3, False),
+    ([['AG'], ['CM'], ['BG'], ['BM', 'CG', 'UG', 'UM', 'AM', 'LG', 'LM']], 3, False),
 ])
-def test_day_11_done(floors, done):
-    assert day11.is_done(floors) == done
+def test_day_11_done(floors, elevator, done):
+    assert day11.is_done(floors, elevator) == done
 
-@pytest.mark.parametrize('s1_floors,s1_elevator,s2_floors,s2_elevator,target', [
-    ([[], [], [], []], 0, [[], [], [], []], 0, True),
-    ([[], [], [], []], 0, [[], [], [], []], 1, False),
-    ([['AG', 'AM'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
-    ([['AM', 'AG'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
-    ([['AG', 'AM'], ['BG', 'BM'], [], []], 0, [['BG', 'BM'], ['AG', 'AM'], [], []], 0, True),  # Equiv
-    ([['AG'], ['AM'], [], []], 0, [['AG'], [], ['AM'], []], 0, False),
-    ([['AG', 'AM', 'CG'], ['BG', 'BM'], ['CM'], []], 0, [['BG', 'BM', 'AG'], ['CG', 'CM'], ['AM'], []], 0, True),  # Equiv
-    ([['LM', 'HM'], ['HG'], ['LG'], []], 0, [['HM', 'LM'], ['HG'], ['LG'], []], 0, True),
-])
-def test_day_11_state_eq(s1_floors, s1_elevator, s2_floors, s2_elevator, target):
-    s1 = day11.State(s1_floors, s1_elevator)
-    s2 = day11.State(s2_floors, s2_elevator)
-    assert (s1 == s2) == target
+# @pytest.mark.parametrize('s1_floors,s1_elevator,s2_floors,s2_elevator,target', [
+#     ([[], [], [], []], 0, [[], [], [], []], 0, True),
+#     ([[], [], [], []], 0, [[], [], [], []], 1, False),
+#     ([['AG', 'AM'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
+#     ([['AM', 'AG'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
+#     ([['AG'], ['AM'], [], []], 0, [['AG'], [], ['AM'], []], 0, False),
+#     ([['LM', 'HM'], ['HG'], ['LG'], []], 0, [['HM', 'LM'], ['HG'], ['LG'], []], 0, True),
+#     ([['AG', 'AM'], ['BG', 'BM'], [], []], 0, [['BG', 'BM'], ['AG', 'AM'], [], []], 0, False),  # Equiv
+#     ([['AG', 'AM', 'CG'], ['BG', 'BM'], ['CM'], []], 0, [['BG', 'BM', 'AG'], ['CG', 'CM'], ['AM'], []], 0, False),  # Equiv
+# ])
+# def test_day_11_state_eq(s1_floors, s1_elevator, s2_floors, s2_elevator, target):
+#     s1 = day11.State(s1_floors, s1_elevator)
+#     s2 = day11.State(s2_floors, s2_elevator)
+#     assert (s1 == s2) == target
 
-@pytest.mark.parametrize('floors,priority', [
-    ([['AG', 'AM'], [], [], []], 6),
-    ([['LM', 'HM'], ['HG'], ['LG'], []], 9),
-    ([[], [], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], 0),
-    ([[], [], ['BG'], ['BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], 1),
+@pytest.mark.parametrize('floors,elevator,priority', [
+    ([['AG', 'AM'], [], [], []], 0, 9),
+    ([['LM', 'HM'], ['HG'], ['LG'], []], 0, 12),
+    ([[], [], [], ['BG', 'BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], 3, 0),
+    ([[], [], ['BG'], ['BM', 'CG', 'CM', 'UG', 'UM', 'AG', 'AM', 'LG', 'LM']], 2, 2),
 ])
-def test_day_11_priority(floors, priority):
-    assert day11.priority(floors) == priority
+def test_day_11_priority(floors, elevator, priority):
+    assert day11.priority(floors, elevator) == priority
 
 @pytest.mark.parametrize('floors,steps', [
     ([['AG'], [], [], ['AM']], 3),
