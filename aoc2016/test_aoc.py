@@ -191,6 +191,7 @@ def test_day_11_done(floors, elevator, done):
     ([['LM', 'HM'], ['HG'], ['LG'], []], 0, [['HM', 'LM'], ['HG'], ['LG'], []], 0, True),
     ([['AG', 'AM'], ['BG', 'BM'], [], []], 0, [['BG', 'BM'], ['AG', 'AM'], [], []], 0, True),  # Equiv
     ([['AG', 'AM', 'CG'], ['BG', 'BM'], ['CM'], []], 0, [['BG', 'BM', 'AG'], ['CG', 'CM'], ['AM'], []], 0, True),  # Equiv
+    ([['AG', 'AM', 'BG', 'BM'], ['CG', 'CM'], [], []], 0, [['AG', 'AM'], ['BG', 'BM', 'CG', 'CM'], [], []], 0, False),
 ])
 def test_day_11_state_eq(s1_floors, s1_elevator, s2_floors, s2_elevator, target):
     day11.State.EQUIV_FUNC = True

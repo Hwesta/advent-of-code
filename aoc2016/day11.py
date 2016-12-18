@@ -125,7 +125,7 @@ import heapq
 import os
 
 PRIORITY_Q = False
-EQUIV_FUNC = False
+EQUIV_FUNC = True
 
 
 class State(object):
@@ -201,7 +201,7 @@ def freeze(floors):
     return tuple(frozenset(f) for f in floors)
 
 def pairs_rep(floors):
-    pairs = set()
+    pairs = list()
     # Generate pairs
     for i, floor in enumerate(floors):
         for item in floor:
@@ -209,8 +209,8 @@ def pairs_rep(floors):
                 match = item[0] + "G"
                 for j, search_floor in enumerate(floors):
                     if match in search_floor:
-                        pairs.add((i, j))
-    return frozenset(pairs)
+                        pairs.append((i, j))
+    return tuple(sorted(pairs))
 
 def valid_state(floors):
     """Check if state is valid."""
@@ -317,6 +317,5 @@ if __name__ == '__main__':
     #     [],
     # ]  # 37
 
-    # Took 24 mins & ~8 GB RAM
     print('It takes', solve(data), 'steps to move all 10 items to the top floor.')
-    # print('It takes', solve(data, extras=True), 'steps to move all 14 items to the top floor.')
+    print('It takes', solve(data, extras=True), 'steps to move all 14 items to the top floor.')
