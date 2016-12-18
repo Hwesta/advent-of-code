@@ -120,64 +120,29 @@ In your situation, what is the minimum number of steps required to bring all of 
 from __future__ import division, print_function
 import collections
 import copy
-import functools
 import itertools
 import heapq
 import os
-
 
 PRIORITY_Q = False
 EQUIV_FUNC = False
 
 
-class TinyTree(object):
-
-    def __init__(self, value, parents=None):
-        self.value = value
-        if parents is None:
-            self.parents = []
-        else:
-            self.parents = parents
-
-    def __eq__(self, other):
-        return self.value == other.value
-
-    def __str__(self):
-        return 'TinyTree %s' % self.value
-
-    def __repr__(self):
-        return 'TinyTree(%s, %s)' % (self.value, [str(s) for s in self.parents])
-
-    def __hash__(self):
-        return self.value
-
-    def next_state(self):
-        parents = self.parents + [self]
-        yield TinyTree(self.value // 2, parents=parents)
-        yield TinyTree(max((self.value * 2) - 1, 0), parents=parents)
-
-
-@functools.total_ordering
 class State(object):
+    """State for a step moving machines & generators."""
+    EQUIV_FUNC = None
 
     def __init__(self, floors, elevator, parents=None):
-        self.floors = [sorted(f) for f in floors]
-        # Ensure sorted
+        self.floors = floors
         self.elevator = elevator
         if parents is None:
             self.parents = []
         else:
             self.parents = parents
-        self.priority = priority(floors)
+        self.priority = priority(self.floors, self.elevator)
 
     def __str__(self):
-        return 'State: E%s F0: %s; F1: %s; F2: %s; F3: %s' % (
-            self.elevator,
-            ' '.join(self.floors[0]),
-            ' '.join(self.floors[1]),
-            ' '.join(self.floors[2]),
-            ' '.join(self.floors[3]),
-        )
+        return 'State(%s, E%s, %s)' % (self.floors, self.elevator, len(self.parents))
 
     def __repr__(self):
         return 'State(%s, %s)' % (self.floors, self.elevator)
@@ -189,87 +154,57 @@ class State(object):
 
         return hash(self) == hash(other)
 
-    def __lt__(self, other):
-        return (self.priority, hash(self)) < (other.priority, hash(other))
-
     def __hash__(self):
-        # So can be put in a set
-        if EQUIV_FUNC:
-            return hash(normalize_rep(self.floors, self.elevator))
+        if self.EQUIV_FUNC:
+            pairs = pairs_rep(self.floors)
+            return hash((pairs, self.elevator))
         else:
-            floors = copy.deepcopy(self.floors)
-            floors[self.elevator] += ['E']
-            return hash(tuple(frozenset(f) for f in floors))
+            frozen_floors = freeze(self.floors)
+            return hash((frozen_floors, self.elevator))
 
     def next_state(self):
         """Generate a child state from here."""
+        # Don't move into empty floors below
+        empty_below = -1
+        for i, floor in enumerate(self.floors):
+            if not floor:
+                empty_below = i
+            else:
+                break
 
-        # Check if below floors are empty
-        empty_below = not sum(len(f) for f in self.floors[:self.elevator])
-
-        brought_2_up = False
-
-        # Bring 2 items up
-        for i1, i2 in itertools.combinations(self.floors[self.elevator], 2):
-            # Up
-            next_floor = self.elevator + 1
-            if next_floor < 4:
-                new_floors = copy.deepcopy(self.floors)
-                new_floors[self.elevator].remove(i1)
-                new_floors[self.elevator].remove(i2)
-                new_floors[next_floor].append(i1)
-                new_floors[next_floor].append(i2)
-                if valid_floor(new_floors):
-                    brought_2_up = True
-                    yield State(new_floors, next_floor, parents=self.parents + [self])
-
-            if empty_below:
-                continue
-
-            # Down
-            next_floor = self.elevator - 1
-            if next_floor >= 0:
-                new_floors = copy.deepcopy(self.floors)
-                new_floors[self.elevator].remove(i1)
-                new_floors[self.elevator].remove(i2)
-                new_floors[next_floor].append(i1)
-                new_floors[next_floor].append(i2)
-                if valid_floor(new_floors):
-                    yield State(new_floors, next_floor, parents=self.parents + [self])
-
-        # Bring 1 item up or down
-        for item in self.floors[self.elevator]:
-            # Up
-            if not brought_2_up:
-                next_floor = self.elevator + 1
-                if next_floor < 4:
-                    new_floors = copy.deepcopy(self.floors)
-                    new_floors[self.elevator].remove(item)
-                    new_floors[next_floor].append(item)
-                    if valid_floor(new_floors):
-                        yield State(new_floors, next_floor, parents=self.parents + [self])
-
-            # Down
-            if empty_below:
-                continue
-
-            next_floor = self.elevator - 1
-            if next_floor >= 0:
+        # Move 2 items
+        for item, item2 in itertools.combinations(self.floors[self.elevator], 2):
+            for dx in (1, -1):
+                new_elevator = self.elevator + dx
+                if new_elevator not in range(4) or new_elevator <= empty_below:
+                    continue
+                # Move item
                 new_floors = copy.deepcopy(self.floors)
                 new_floors[self.elevator].remove(item)
-                new_floors[next_floor].append(item)
-                if valid_floor(new_floors):
-                    yield State(new_floors, next_floor, parents=self.parents + [self])
+                new_floors[new_elevator].append(item)
+                new_floors[self.elevator].remove(item2)
+                new_floors[new_elevator].append(item2)
+                if valid_state(new_floors):
+                    yield State(new_floors, new_elevator, parents=self.parents + [self])
+        # Move item
+        for item in self.floors[self.elevator]:
+            for dx in (1, -1):
+                new_elevator = self.elevator + dx
+                if new_elevator not in range(4) or new_elevator <= empty_below:
+                    continue
+                # Move item
+                new_floors = copy.deepcopy(self.floors)
+                new_floors[self.elevator].remove(item)
+                new_floors[new_elevator].append(item)
+                if valid_state(new_floors):
+                    yield State(new_floors, new_elevator, parents=self.parents + [self])
 
+def freeze(floors):
+    """Freeze floors so they can be hashed."""
+    return tuple(frozenset(f) for f in floors)
 
-def normalize_rep(floors, elevator):
-    # Normalize representation - convert
-    # [['BM', 'BG', 'CG'], ['CM'], ['AM', 'AG'], []]
-    # to
-    # [['AM', 'AG', 'BG'], ['BM'], ['CM', 'CG'], []]
-
+def pairs_rep(floors):
     pairs = set()
-    floors = copy.deepcopy(floors)
     # Generate pairs
     for i, floor in enumerate(floors):
         for item in floor:
@@ -278,108 +213,113 @@ def normalize_rep(floors, elevator):
                 for j, search_floor in enumerate(floors):
                     if match in search_floor:
                         pairs.add((i, j))
-    return (frozenset(pairs), elevator)
+    return frozenset(pairs)
 
-def valid_floor(floors):
+def valid_state(floors):
+    """Check if state is valid."""
     for floor in floors:
-        """Nothing is fried on the floor with this elevator."""
-        all_machines = set(t[0] for t in floor if t[1] == 'M')
-        all_generators = set(t[0] for t in floor if t[1] == 'G')
-
-        unshielded_machines = all_machines - all_generators
-
-        if all_generators and unshielded_machines:
+        machines = set(x[0] for x in floor if x[1] == 'M')
+        generators = set(x[0] for x in floor if x[1] == 'G')
+        unshielded_machines = machines - generators
+        if generators and unshielded_machines:
             return False
-
-    # Nothing in valid - all are valid
     return True
 
+def is_done(floors, elevator):
+    """Check if done."""
+    if elevator != 3:
+        return False
+    if not floors[0] and not floors[1] and not floors[2] and floors[3]:
+        return True
+    return False
 
-def is_done(floors):
-    """Check if everything is on fourth floor."""
-    return len(floors[0]) + len(floors[1]) + len(floors[2]) == 0
-
-
-def priority(floors):
-    priority = 0
+def priority(floors, elevator):
+    """Priority for a State."""
+    priority = 3 - elevator
     for i, floor in enumerate(floors):
         priority += (3 - i) * len(floor)
     return priority
 
 
-def solve(data):
-    floors = data
 
-    starting_state = State(floors, 0)
+def solve(data, extras=False):
+    State.EQUIV_FUNC = EQUIV_FUNC
+    print('rotational equivalence', State.EQUIV_FUNC)
+    # Search
+    if extras:
+        print('Add extras')
+        data[0] += ['YG', 'YM', 'ZG', 'ZM']
+    starting_state = State(floors=data, elevator=0)
+    print('starting state', starting_state)
 
     if PRIORITY_Q:
+        print('priority q')
         queue = []
         heapq.heappush(queue, (starting_state.priority, starting_state))
     else:
+        print('deque')
         queue = collections.deque()
         queue.append(starting_state)
+
     ever_seen = set()
     ever_seen.add(starting_state)
-    steps = 0
+
+    states = 0
     max_depth = 0
     while queue:
         if PRIORITY_Q:
             _, item = heapq.heappop(queue)
         else:
             item = queue.popleft()
-
+        # print('popped', item)
         if len(item.parents) > max_depth:
             max_depth = len(item.parents)
-            print('max depth', max_depth, 'states', steps, 'len q', len(queue))
-        # print('popped item', item, len(item.parents))
-        if is_done(item.floors):
-            print('FOUND VALID SOLUTION', len(item.parents), steps)
+            print('max depth', max_depth, 'states', states, 'len q', len(queue))
+        if is_done(item.floors, item.elevator):
+            print('The number of steps to move everything is', len(item.parents))
             return len(item.parents)
-        ever_seen.add(item)
         for new_item in item.next_state():
             if new_item not in ever_seen:
-                # print('gen item', new_item)
-                # print('ever seen', ever_seen)
-                # print('added')
+                # print('added', new_item)
                 if PRIORITY_Q:
                     heapq.heappush(queue, (new_item.priority, new_item))
                 else:
                     queue.append(new_item)
-        steps += 1
-    print('fallthrough', steps)
+                ever_seen.add(new_item)
+        states += 1
+
+    print('fallthrough')
     return None
+
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day11.input')) as f:
-        data = f.read().splitlines()
-
-    # Fails
-    data = [  # Holly
+        data = f.read()
+    data = [
         ['AG', 'AM'],
         ['BG', 'CG', 'DG', 'EG'],
         ['BM', 'CM', 'DM', 'EM'],
         [],
     ]
-    data = [
-        ['AG', 'AM', 'BG', 'CG'],
-        ['BM', 'CM'],
-        ['DG', 'DM', 'EG', 'EM'],
-        [],
-    ]  # 31
+    # data = [
+    #     ['AG', 'AM', 'BG', 'CG'],
+    #     ['BM', 'CM'],
+    #     ['DG', 'DM', 'EG', 'EM'],
+    #     [],
+    # ]  # 31
+    # data = [
+    #     ['AG', 'BG', 'BM', 'CG', 'DG', 'DM', 'EG', 'EM'],
+    #     ['AM', 'CM'],
+    #     [],
+    #     [],
+    # ]  # 47
+    # data = [
+    #     ['AM', 'AG', 'BM', 'BG'],
+    #     ['CM', 'CG', 'DM', 'DG', 'EG'],
+    #     ['EM'],
+    #     [],
+    # ]  # 37
 
-    # Works
-    data = [
-        ['AG', 'BG', 'BM', 'CG', 'DG', 'DM', 'EG', 'EM'],
-        ['AM', 'CM'],
-        [],
-        [],
-    ]  # 47
-    data = [
-        ['AM', 'AG', 'BM', 'BG'],
-        ['CM', 'CG', 'DM', 'DG', 'EG'],
-        ['EM'],
-        [],
-    ]  # 37
-
-    print(solve(data))
+    # Took 24 mins & ~8 GB RAM
+    print(solve(data, extras=True))
