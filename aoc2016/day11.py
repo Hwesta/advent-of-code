@@ -132,20 +132,17 @@ class State(object):
     """State for a step moving machines & generators."""
     EQUIV_FUNC = None
 
-    def __init__(self, floors, elevator, parents=None):
+    def __init__(self, floors, elevator, parents=0):
         self.floors = floors
         self.elevator = elevator
-        if parents is None:
-            self.parents = []
-        else:
-            self.parents = parents
+        self.parents = parents
         self.priority = priority(self.floors, self.elevator)
 
     def __str__(self):
-        return 'State(%s, E%s, %s)' % (self.floors, self.elevator, len(self.parents))
+        return 'State(%s, E: %s, Parents: %s)' % (self.floors, self.elevator, self.parents)
 
     def __repr__(self):
-        return 'State(%s, %s)' % (self.floors, self.elevator)
+        return 'State(%s, %s, %s)' % (self.floors, self.elevator, self.parents)
 
     def __eq__(self, other):
         # Return true if they are equivalent - ie type-rotated
@@ -185,7 +182,7 @@ class State(object):
                 new_floors[self.elevator].remove(item2)
                 new_floors[new_elevator].append(item2)
                 if valid_state(new_floors):
-                    yield State(new_floors, new_elevator, parents=self.parents + [self])
+                    yield State(new_floors, new_elevator, parents=self.parents + 1)
         # Move item
         for item in self.floors[self.elevator]:
             for dx in (1, -1):
@@ -197,7 +194,7 @@ class State(object):
                 new_floors[self.elevator].remove(item)
                 new_floors[new_elevator].append(item)
                 if valid_state(new_floors):
-                    yield State(new_floors, new_elevator, parents=self.parents + [self])
+                    yield State(new_floors, new_elevator, parents=self.parents + 1)
 
 def freeze(floors):
     """Freeze floors so they can be hashed."""
@@ -241,7 +238,6 @@ def priority(floors, elevator):
     return priority
 
 
-
 def solve(data, extras=False):
     State.EQUIV_FUNC = EQUIV_FUNC
     print('rotational equivalence', State.EQUIV_FUNC)
@@ -272,12 +268,12 @@ def solve(data, extras=False):
         else:
             item = queue.popleft()
         # print('popped', item)
-        if len(item.parents) > max_depth:
-            max_depth = len(item.parents)
+        if item.parents > max_depth:
+            max_depth = item.parents
             print('max depth', max_depth, 'states', states, 'len q', len(queue))
         if is_done(item.floors, item.elevator):
-            print('The number of steps to move everything is', len(item.parents))
-            return len(item.parents)
+            print('The number of steps to move everything is', item.parents)
+            return item.parents
         for new_item in item.next_state():
             if new_item not in ever_seen:
                 # print('added', new_item)
