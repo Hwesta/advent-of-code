@@ -126,6 +126,7 @@ import heapq
 import os
 
 PRIORITY_Q = False
+EQUIV_FUNC = False
 
 def priority(floors, elevator):
     """Priority for a State."""
@@ -156,9 +157,22 @@ def freeze(floors):
     """Freeze floors so they can be hashed."""
     return tuple(frozenset(f) for f in floors)
 
+def pairs_rep(floors):
+    pairs = set()
+    # Generate pairs
+    for i, floor in enumerate(floors):
+        for item in floor:
+            if item[1] == 'M':
+                match = item[0] + "G"
+                for j, search_floor in enumerate(floors):
+                    if match in search_floor:
+                        pairs.add((i, j))
+    return frozenset(pairs)
+
 
 class State(object):
     """State for a step moving machines & generators."""
+    EQUIV_FUNC = None
 
     def __init__(self, floors, elevator, parents=None):
         self.floors = floors
@@ -170,14 +184,21 @@ class State(object):
         self.priority = priority(self.floors, self.elevator)
 
     def __str__(self):
-        return 'State(%s, E%s, %s, %s)' % (self.floors, self.elevator, len(self.parents), self.priority)
+        return 'State(%s, E%s, %s)' % (self.floors, self.elevator, len(self.parents))
+
+    def __repr__(self):
+        return 'State(%s, %s)' % (self.floors, self.elevator)
 
     def __eq__(self, other):
         return hash(self) == hash(other)
 
     def __hash__(self):
-        frozen_floors = freeze(self.floors)
-        return hash((frozen_floors, self.elevator))
+        if self.EQUIV_FUNC:
+            pairs = pairs_rep(self.floors)
+            return hash((pairs, self.elevator))
+        else:
+            frozen_floors = freeze(self.floors)
+            return hash((frozen_floors, self.elevator))
 
     def next_state(self):
         """Generate a child state from here."""
@@ -218,6 +239,8 @@ class State(object):
 
 
 def solve(data):
+    State.EQUIV_FUNC = EQUIV_FUNC
+    print('rotational equivalence', State.EQUIV_FUNC)
     # Search
     starting_state = State(floors=data, elevator=0)
 

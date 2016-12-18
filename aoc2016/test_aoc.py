@@ -182,20 +182,25 @@ def test_day_11_floor(floors, valid):
 def test_day_11_done(floors, elevator, done):
     assert day11.is_done(floors, elevator) == done
 
-# @pytest.mark.parametrize('s1_floors,s1_elevator,s2_floors,s2_elevator,target', [
-#     ([[], [], [], []], 0, [[], [], [], []], 0, True),
-#     ([[], [], [], []], 0, [[], [], [], []], 1, False),
-#     ([['AG', 'AM'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
-#     ([['AM', 'AG'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
-#     ([['AG'], ['AM'], [], []], 0, [['AG'], [], ['AM'], []], 0, False),
-#     ([['LM', 'HM'], ['HG'], ['LG'], []], 0, [['HM', 'LM'], ['HG'], ['LG'], []], 0, True),
-#     ([['AG', 'AM'], ['BG', 'BM'], [], []], 0, [['BG', 'BM'], ['AG', 'AM'], [], []], 0, False),  # Equiv
-#     ([['AG', 'AM', 'CG'], ['BG', 'BM'], ['CM'], []], 0, [['BG', 'BM', 'AG'], ['CG', 'CM'], ['AM'], []], 0, False),  # Equiv
-# ])
-# def test_day_11_state_eq(s1_floors, s1_elevator, s2_floors, s2_elevator, target):
-#     s1 = day11.State(s1_floors, s1_elevator)
-#     s2 = day11.State(s2_floors, s2_elevator)
-#     assert (s1 == s2) == target
+@pytest.mark.parametrize('s1_floors,s1_elevator,s2_floors,s2_elevator,target', [
+    ([[], [], [], []], 0, [[], [], [], []], 0, True),
+    ([[], [], [], []], 0, [[], [], [], []], 1, False),
+    ([['AG', 'AM'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
+    ([['AM', 'AG'], [], [], []], 0, [['AG', 'AM'], [], [], []], 0, True),
+    ([['AG'], ['AM'], [], []], 0, [['AG'], [], ['AM'], []], 0, False),
+    ([['AG', 'AM'], [], [], []], 0, [['AG'], [], ['AM'], []], 0, False),
+    ([['AG', 'AM'], [], [], []], 0, [[], [], ['AM', 'AG'], []], 0, False),
+    ([['LM', 'HM'], ['HG'], ['LG'], []], 0, [['HM', 'LM'], ['HG'], ['LG'], []], 0, True),
+    ([['AG', 'AM'], ['BG', 'BM'], [], []], 0, [['BG', 'BM'], ['AG', 'AM'], [], []], 0, True),  # Equiv
+    ([['AG', 'AM', 'CG'], ['BG', 'BM'], ['CM'], []], 0, [['BG', 'BM', 'AG'], ['CG', 'CM'], ['AM'], []], 0, True),  # Equiv
+])
+def test_day_11_state_eq(s1_floors, s1_elevator, s2_floors, s2_elevator, target):
+    day11.State.EQUIV_FUNC = True
+    s1 = day11.State(s1_floors, s1_elevator)
+    s2 = day11.State(s2_floors, s2_elevator)
+    visited = set()
+    visited.add(s1)
+    assert (s2 in visited) == target
 
 @pytest.mark.parametrize('floors,elevator,priority', [
     ([['AG', 'AM'], [], [], []], 0, 9),
