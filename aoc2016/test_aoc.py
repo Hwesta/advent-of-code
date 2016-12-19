@@ -7,7 +7,7 @@ import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
 from . import day10, day11, day12, day13, day14, day15, day16, day17, day18
-
+from . import day19
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -313,3 +313,13 @@ def test_day_17(passcode, path, longest):
 ])
 def test_day_18(startrow, num_row, num_safe):
     assert day18.solve(startrow, num_row) == num_safe
+
+def test_day_19():
+    assert day19.solve(5) == 3
+
+@pytest.mark.parametrize('num_elves,target', [
+    (5, 2),
+    (8, 7),
+])
+def test_day_19_across(num_elves, target):
+    assert day19.solve_across(num_elves) == target
