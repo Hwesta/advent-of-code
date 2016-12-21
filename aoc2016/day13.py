@@ -146,5 +146,5 @@ if __name__ == '__main__':
     with open(os.path.join(this_dir, 'day13.input')) as f:
         data = f.read()
     data = int(data)
-    solve(data, goal=(31, 39))
-    solve(data, goal=(-1, -1), max_steps=50)
+    print('It takes', solve(data, goal=(31, 39)), 'steps to reach 31,39')
+    print('The most locations that can be reached in 50 steps is', solve(data, goal=(-1, -1), max_steps=50))

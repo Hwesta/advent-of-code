@@ -96,5 +96,5 @@ if __name__ == '__main__':
     with open(os.path.join(this_dir, 'day16.input')) as f:
         data = f.read()
 
-    print(solve(data, 272))
-    print(solve(data, 35651584))
+    print('The correct checksum for size 272 disk is', solve(data, 272))
+    print('The correct checksum for size 35651584 disk is', solve(data, 35651584))

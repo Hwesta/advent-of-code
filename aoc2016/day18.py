@@ -87,5 +87,5 @@ if __name__ == '__main__':
     with open(os.path.join(this_dir, 'day18.input')) as f:
         data = f.read()
 
-    print(solve(data, 40))
-    print(solve(data, 400000))
+    print('There are', solve(data, 40), 'safe tiles in 40 rows.')
+    print('There are', solve(data, 400000), 'safe tiles in 400000 rows.')

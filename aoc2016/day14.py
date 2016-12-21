@@ -123,5 +123,5 @@ if __name__ == '__main__':
     with open(os.path.join(this_dir, 'day14.input')) as f:
         data = f.read()
 
-    print(solve(data))
-    print(solve(data, lengthen=True))
+    print('Index', solve(data), 'produces the 64th one-time pad key.')
+    print('Index', solve(data, lengthen=True), '64th one-time pad key with stretching.')
