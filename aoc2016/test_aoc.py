@@ -7,7 +7,7 @@ import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
 from . import day10, day11, day12, day13, day14, day15, day16, day17, day18
-from . import day19, day20
+from . import day19, day20, day21
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -332,3 +332,19 @@ def test_day_19_across(num_elves, target):
 def test_day_20(ranges, min_ip, total_ips):
     assert day20.solve(ranges) == min_ip
     assert day20.solve(ranges, count=True, max_ip=9) == total_ips
+
+def test_day_21():
+    data = [
+        'swap position 4 with position 0',
+        'swap letter d with letter b',
+        'reverse positions 0 through 4',
+        'rotate left 1',
+        'move position 1 to position 4',
+        'move position 3 to position 0',
+        'rotate based on position of letter b',
+        'rotate based on position of letter d',
+    ]
+    assert day21.solve(data, 'abcde') == 'decab'
+    # NOTE This has 2 possible descrambled rotate by value d
+    # This doesn't appear in my input
+    assert day21.solve(data, 'decab', unscramble=True) == 'abcde'
