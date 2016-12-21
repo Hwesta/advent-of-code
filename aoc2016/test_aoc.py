@@ -320,6 +320,7 @@ def test_day_19():
 @pytest.mark.parametrize('num_elves,target', [
     (5, 2),
     (8, 7),
+    (10, 1),
 ])
 def test_day_19_across(num_elves, target):
     assert day19.solve_across(num_elves) == target
@@ -327,7 +328,6 @@ def test_day_19_across(num_elves, target):
 @pytest.mark.parametrize('ranges,min_ip,total_ips', [
     (['5-8', '0-2', '4-7'], 3, 2),
     (['5-7', '0-2'], 3, 4),
-
 ])
 def test_day_20(ranges, min_ip, total_ips):
     assert day20.solve(ranges) == min_ip

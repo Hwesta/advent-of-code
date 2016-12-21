@@ -67,25 +67,50 @@ With the number of Elves given in your puzzle input, which Elf now gets all the 
 """
 from __future__ import print_function
 
+import collections
 import os
 
 
-def solve_across(data):
-    elf_count = int(data)
-    elves = list(range(elf_count))
+# def solve_across(data):
+#     # This works but is very very slow
+#     elf_count = int(data)
+#     elves = list(range(elf_count))
 
-    stealing_elf = 0
-    while len(elves) > 1:
-        stealing_elf_value = elves[stealing_elf]
-        steal_from = (stealing_elf + (len(elves) // 2)) % len(elves)
-        # print('idx', stealing_elf, 'val', elves[stealing_elf], 'steal from val', elves[steal_from])
-        del elves[steal_from]
-        stealing_elf = (elves.index(stealing_elf_value) + 1) % len(elves)
-        if len(elves) % 1000 == 0:
-            print('len elves', len(elves))
-        # print(elves)
-    print(elves)
-    return elves[0] + 1
+#     stealing_elf = 0
+#     while len(elves) > 1:
+#         stealing_elf_value = elves[stealing_elf]
+#         steal_from = (stealing_elf + (len(elves) // 2)) % len(elves)
+#         del elves[steal_from]
+#         stealing_elf = (elves.index(stealing_elf_value) + 1) % len(elves)
+#         if len(elves) % 1000 == 0:
+#             print('len elves', len(elves))
+#     return elves[0] + 1
+
+
+def solve_across(data):
+    # When stealing across, the victim alternates moving ahead 1 and 2 as the circle shrinks
+    # Former thiefs become potential victims after thieving
+    # Skipped victims become thiefs after being skipped
+    # This can be simulated using a linked list (deque) for each half of the circle
+    # One list for the thiefs (first half of the circle)
+    # A second list for potential victims (second half of the circle)
+    # After an elf steals/is stolen from, they move lists or are removed
+    total = int(data)
+    # 1 indexed
+    thiefs = collections.deque(range(1, total / 2 + 1))
+    potential_victims = collections.deque(range(total / 2 + 1, total + 1))
+
+    while potential_victims and thiefs:
+        potential_victims.popleft()  # Stolen from, gone
+        # Move thief
+        val = thiefs.popleft()
+        potential_victims.append(val)
+        # If odd, skip a victim
+        if (len(potential_victims) + len(thiefs)) % 2 == 0:
+            val = potential_victims.popleft()
+            thiefs.append(val)
+
+    return potential_victims.pop()
 
 
 def solve(data):
@@ -116,5 +141,5 @@ if __name__ == '__main__':
     with open(os.path.join(this_dir, 'day19.input')) as f:
         data = f.read()
 
-    # print(solve(data))
-    print(solve_across(data))
+    print('Stealing from neighbours, the elf with all the presents is', solve(data))
+    print('Stealing across, the elf with all the presents is', solve_across(data))
