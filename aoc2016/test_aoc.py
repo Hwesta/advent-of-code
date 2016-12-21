@@ -7,7 +7,7 @@ import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
 from . import day10, day11, day12, day13, day14, day15, day16, day17, day18
-from . import day19
+from . import day19, day20
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -323,3 +323,12 @@ def test_day_19():
 ])
 def test_day_19_across(num_elves, target):
     assert day19.solve_across(num_elves) == target
+
+@pytest.mark.parametrize('ranges,min_ip,total_ips', [
+    (['5-8', '0-2', '4-7'], 3, 2),
+    (['5-7', '0-2'], 3, 4),
+
+])
+def test_day_20(ranges, min_ip, total_ips):
+    assert day20.solve(ranges) == min_ip
+    assert day20.solve(ranges, count=True, max_ip=9) == total_ips
