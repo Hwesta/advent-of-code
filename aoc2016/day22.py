@@ -166,13 +166,12 @@ def solve(data):
         print()
     # Hole is 17, 22
     # Wall is (1-37, 13)
-    # So move hole to y=0 col (17 moves)
+    # So move hole to x=0 col (17 moves)
     # Move hole to top (22 moves)
-    # Move hole to next to goal data (37 moves)
+    # Move hole to next to goal data (36 moves)
     # Use example goal data walking to walk to next to destination (36 * 5 moves)
     # Move into destination (1 move)
-    # 17 + 22 + 37 + (36*5) + 1 = 257
-    # Plus an off by one error = 256
+    # 17 + 22 + 36 + (36*5) + 1 = 256
     return len(pairs)
 
 
