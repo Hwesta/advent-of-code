@@ -7,7 +7,7 @@ import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
 from . import day10, day11, day12, day13, day14, day15, day16, day17, day18
-from . import day19, day20, day21
+from . import day19, day20, day21, day23
 
 @pytest.mark.parametrize('directions,distance,dupe', [
     ('R2, L3', 5, False),
@@ -348,3 +348,14 @@ def test_day_21():
     # NOTE This has 2 possible descrambled rotate by value d
     # This doesn't appear in my input
     assert day21.solve(data, 'decab', unscramble=True) == 'abcde'
+
+def test_day_23():
+    assert day23.solve([
+        'cpy 2 a',
+        'tgl a',
+        'tgl a',
+        'tgl a',
+        'cpy 1 a',
+        'dec a',
+        'dec a',
+    ]) == 3
