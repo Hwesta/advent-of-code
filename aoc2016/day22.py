@@ -109,23 +109,29 @@ What is the fewest number of steps required to move your goal data to node-x0-y0
 """
 from __future__ import print_function
 
-import collections
-import itertools
 import os
 
 
 def solve(data):
     data = data[2:]  # Strip headers
     nodes = {}
+    max_x = 0
+    max_y = 0
     for row in data:
         row = row.split()
         _, x, y = row[0].split('-')
+        x = int(x[1:])
+        y = int(y[1:])
         nodes[(x, y)] = {
             'id': row[0][10:],
             'size': int(row[1][:-1]),
             'used': int(row[2][:-1]),
             'avail': int(row[3][:-1]),
         }
+        max_x = max(x, max_x)
+        max_y = max(y, max_y)
+
+    nodes[(max_x, 0)]['goal'] = True
 
     pairs = set()
     for node_id, node in nodes.items():
@@ -140,6 +146,33 @@ def solve(data):
                 # print('paired')
                 pairs.add((node_id, dest_node_id))
 
+    # Draw
+    for y in range(max_y+1):
+        for x in range(max_x+1):
+            node = nodes[(x, y)]
+            if (x, y) == (0, 0):
+                fstring = '(%s)'
+            else:
+                fstring = ' %s '
+            if node.get('goal'):
+                val = 'G'
+            elif node['used'] == 0:
+                val = '_'
+            elif node['size'] > 100:
+                val = '#'
+            else:
+                val = '.'
+            print(fstring % val, end='')
+        print()
+    # Hole is 17, 22
+    # Wall is (1-37, 13)
+    # So move hole to y=0 col (17 moves)
+    # Move hole to top (22 moves)
+    # Move hole to next to goal data (37 moves)
+    # Use example goal data walking to walk to next to destination (36 * 5 moves)
+    # Move into destination (1 move)
+    # 17 + 22 + 37 + (36*5) + 1 = 257
+    # Plus an off by one error = 256
     return len(pairs)
 
 
