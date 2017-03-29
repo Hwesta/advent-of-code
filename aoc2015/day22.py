@@ -138,6 +138,46 @@ def run_game(boss, player):
     else:
         return 'boss'
 
+class State(object):
+    """State for a step moving machines & generators."""
+    EQUIV_FUNC = None
+
+    def __init__(self, floors, elevator, parents=0):
+        self.parents = parents
+        self.priority = priority(self.floors, self.elevator)
+
+    def __str__(self):
+        return 'State(%s, E: %s, Parents: %s)' % (self.floors, self.elevator, self.parents)
+
+    def __repr__(self):
+        return 'State(%s, %s, %s)' % (self.floors, self.elevator, self.parents)
+
+    def __eq__(self, other):
+        # Return true if they are equivalent - ie type-rotated
+        return hash(self) == hash(other)
+
+    def __hash__(self):
+        return hash()
+
+    def next_state(self):
+        """Generate a child state from here."""
+        # Use run_game
+
+
+
+def valid_state(floors):
+    """Check if state is valid."""
+    return True
+
+def is_done(floors, elevator):
+    """Check if done."""
+    return False
+
+def priority(floors, elevator):
+    """Priority for a State."""
+    return priority
+
+
 def solve(data):
     player = {
         'hp': 50,
@@ -148,6 +188,37 @@ def solve(data):
         'hp': 51,
         'damage': 9,
     }
+
+    starting_state = State(floors=data, elevator=0)
+    print('starting state', starting_state)
+
+    queue = []
+    heapq.heappush(queue, (starting_state.priority, starting_state))
+
+    ever_seen = set()
+    ever_seen.add(starting_state)
+
+    states = 0
+    max_depth = 0
+    while queue:
+        _, item = heapq.heappop(queue)
+        # print('popped', item)
+        if item.parents > max_depth:
+            max_depth = item.parents
+            print('max depth', max_depth, 'states', states, 'len q', len(queue))
+        if is_done(item.floors, item.elevator):
+            print('The number of steps to move everything is', item.parents)
+            return item.parents
+        for new_item in item.next_state():
+            if new_item not in ever_seen:
+                # print('added', new_item)
+                heapq.heappush(queue, (new_item.priority, new_item))
+                ever_seen.add(new_item)
+        states += 1
+
+    print('fallthrough')
+    return None
+
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
