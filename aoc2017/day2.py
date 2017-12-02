@@ -44,6 +44,7 @@ What is the sum of each row's result in your puzzle input?
 
 """
 from __future__ import print_function
+import itertools
 import os
 
 
@@ -54,23 +55,12 @@ def solve(data, modulo=False):
     for row in data:
         row = list(map(int, row.split()))
         if modulo:
-            for i, elem in enumerate(row):
-                for elem2 in row[i + 1:]:
-                    if elem % elem2 == 0:
-                        checksum += elem // elem2
-                        break
-                    elif elem2 % elem == 0:
-                        checksum += elem2 // elem
-                        break
+            for a, b in itertools.permutations(row, 2):
+                if a % b == 0:
+                    checksum += a // b
+                    break
         else:
-            min_n = None
-            max_n = None
-            for n in row:
-                if min_n is None or n < min_n:
-                    min_n = n
-                if max_n is None or n > max_n:
-                    max_n = n
-            diff = max_n - min_n
+            diff = max(row) - min(row)
             checksum += diff
 
     return checksum
