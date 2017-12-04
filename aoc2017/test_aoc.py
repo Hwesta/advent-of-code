@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from . import day1, day2
+from . import day1, day2, day3
 
 @pytest.mark.parametrize('seq,sum,halfway', [
     ('1122', 3, False),
@@ -29,5 +29,15 @@ def test_day_1(seq, sum, halfway):
 9 4 7 3
 3 8 6 5''', 9, True),
 ])
-def test_day_2(sheet, checksum,modulo):
+def test_day_2(sheet, checksum, modulo):
     assert day2.solve(sheet, modulo=modulo) == checksum
+
+
+@pytest.mark.parametrize('input,distance', [
+    ('1', 0),
+    ('12', 3),
+    ('23', 2),
+    ('1024', 31),
+])
+def test_day_3(input, distance):
+    assert day3.solve(input) == distance
