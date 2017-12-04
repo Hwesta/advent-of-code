@@ -33,11 +33,13 @@ def test_day_2(sheet, checksum, modulo):
     assert day2.solve(sheet, modulo=modulo) == checksum
 
 
-@pytest.mark.parametrize('input,distance', [
-    ('1', 0),
-    ('12', 3),
-    ('23', 2),
-    ('1024', 31),
+@pytest.mark.parametrize('data,answer,flag', [
+    ('1', 0, False),
+    ('12', 3, False),
+    ('23', 2, False),
+    ('1024', 31, False),
+    ('7', 10, True),
+    ('800', 806, True),
 ])
-def test_day_3(input, distance):
-    assert day3.solve(input) == distance
+def test_day_3(data, answer, flag):
+    assert day3.solve(data, flag) == answer

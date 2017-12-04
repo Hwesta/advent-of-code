@@ -23,14 +23,28 @@ For example:
 
 How many steps are required to carry the data from the square identified in your puzzle input all the way to the access port?
 
+--- Part Two ---
 
-37  36  35  34  33  32  31
-38  17  16  15  14  13  30
-39  18   5   4   3  12  29
-40  19   6   1   2  11  28
-41  20   7   8   9  10  27
-42  21  22  23  24  25  26
-43  44  45  46  47  48  49  50
+As a stress test on the system, the programs here clear the grid and then store the value 1 in square 1. Then, in the same allocation order as shown above, they store the sum of the values in all adjacent squares, including diagonals.
+
+So, the first few squares' values are chosen as follows:
+
+    Square 1 starts with the value 1.
+    Square 2 has only one adjacent filled square (with value 1), so it also stores 1.
+    Square 3 has both of the above squares as neighbors and stores the sum of their values, 2.
+    Square 4 has all three of the aforementioned squares as neighbors and stores the sum of their values, 4.
+    Square 5 only has the first and fourth squares as neighbors, so it gets the value 5.
+
+Once a square is written, its value does not change. Therefore, the first few squares would receive the following values:
+
+147  142  133  122   59
+304    5    4    2   57
+330   10    1    1   54
+351   11   23   25   26
+362  747  806--->   ...
+
+What is the first value written that is larger than your puzzle input?
+
 """
 from __future__ import print_function
 import itertools
@@ -38,76 +52,63 @@ import os
 import math
 
 
-def solve(data):
-    # Each diagonal down-right is next odd number squared
-    # eg 1^2, 3^2, 5^2
-    target = int(data)
-    print('target', target)
-    if target == 1:
-        return 0
-
-    # Use odd sqrt to get size of array
-    # Generate 2d array
-    # How generate?
-    # If indexed with 1 at 0,0 x + y == distance
-    # Sqrt gives edge len
-    # also
-    # Get edge len
-
-    # Step down-right to the circle that has the target number in it
-    edge_len = math.floor(math.sqrt(target))
-    if edge_len % 2 == 0:
-        edge_len -= 1
-    steps = len([x for x in range(edge_len) if x % 2 != 0])
-    x = steps
-    y = -steps
-    iterator = edge_len * edge_len
-    print(f'x: {x}, y: {y}, edge_len: {edge_len}, iterator: {iterator}')
-
-    if iterator == target:
-        return abs(x) + abs(y)
-    x += 1
-    iterator += 1
-    if target <= iterator + edge_len:
-        while iterator < target:
-            y += 1
-            iterator += 1
-            print(f'x: {x}, y: {y}, edge_len: {edge_len}, iterator: {iterator}')
-        print('found it', iterator, x, y)
-        return abs(x) + abs(y)
-    print('not in right side, try top')
-    iterator += edge_len
-    y += edge_len
-    edge_len += 1  # Going around longer side
-    print(f'top right corner: x: {x}, y: {y}, edge_len: {edge_len}, iterator: {iterator}')
-    if target <= iterator + edge_len:
-        while iterator < target:
-            x -= 1
-            iterator += 1
-            print(f'x: {x}, y: {y}, edge_len: {edge_len}, iterator: {iterator}')
-        print('found it', iterator, x, y)
-        return abs(x) + abs(y)
-    print('not in top side, try left')
-    iterator += edge_len
-    x -= edge_len
-    if target <= iterator + edge_len:
-        while iterator < target:
+def spiral_iterator(size):
+    """Iterator to spiral outwards counterclockwise from center of 2d plane."""
+    x = y = 0
+    yield x, y
+    for length in range(1, size, 2):
+        x += 1
+        yield x, y
+        for _ in range(length):
             y -= 1
-            iterator += 1
-            print(f'x: {x}, y: {y}, edge_len: {edge_len}, iterator: {iterator}')
-        print('found it', iterator, x, y)
-        return abs(x) + abs(y)
-    print('not in top side, try left')
-    iterator += edge_len
-    y -= edge_len
-    if target <= iterator + edge_len:
-        while iterator < target:
+            yield x, y
+        for _ in range(length + 1):
+            x -= 1
+            yield x, y
+        for _ in range(length + 1):
+            y += 1
+            yield x, y
+        for _ in range(length + 1):
             x += 1
-            iterator += 1
-            print(f'x: {x}, y: {y}, edge_len: {edge_len}, iterator: {iterator}')
-        print('found it', iterator, x, y)
-        return abs(x) + abs(y)
-    raise Exception('Should have found it')
+            yield x, y
+
+def print_grid(grid, edge):
+    half = edge // 2
+    for y in range(-half, half + 1):
+        for x in range(-half, half + 1):
+            print('{: >3d}'.format(grid[x][y]), end='')
+        print()
+    print()
+
+def solve(data, stress_test=True):
+    target = int(data)
+    edge_len = math.ceil(math.sqrt(target))
+    if edge_len % 2 == 0:
+        edge_len += 1
+    edge_len += 1
+    grid = []
+    for x in range(edge_len):
+        grid.append([0] * edge_len)
+    counter = 0
+    grid[0][0] = 1
+
+    for x, y in spiral_iterator(edge_len):
+        if stress_test:
+            counter = sum(
+                grid[x + dx][y + dy]
+                for dx, dy
+                in itertools.product([0, 1, -1], repeat=2)
+            )
+        else:
+            counter += 1
+        grid[x][y] = counter
+        # print_grid(grid, edge_len)
+        if not stress_test and counter == target:
+            return abs(x) + abs(y)
+        if stress_test and counter > target:
+            return counter
+
+    raise Exception('Not found')
 
 
 if __name__ == '__main__':
@@ -115,3 +116,4 @@ if __name__ == '__main__':
     with open(os.path.join(this_dir, 'day3.input')) as f:
         data = f.read()
     print('The number of steps to carry the data back is', solve(data))
+    print('The next largest value in the stress test is', solve(data, True))
