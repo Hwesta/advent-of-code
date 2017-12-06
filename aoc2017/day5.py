@@ -63,4 +63,5 @@ if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day5.input')) as f:
         data = f.read().strip()
-    print(solve(data, True))
+    print('It takes', solve(data, False), 'steps to reach the exit.')
+    print('It now takes', solve(data, True), 'steps to reach the exit.')

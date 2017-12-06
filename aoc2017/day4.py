@@ -50,7 +50,6 @@ def solve(data, flag=False):
             else:
                 valid = False
                 break
-        print('unique', unique)
         valid_count += valid
     return valid_count
 
@@ -59,4 +58,5 @@ if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day4.input')) as f:
         data = f.read().strip()
-    print(solve(data, True))
+    print(solve(data, False), 'passphrases are valid.')
+    print(solve(data, True), 'passphrases are valid, disallowing anagrams.')
