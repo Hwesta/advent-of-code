@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from . import day1, day2, day3, day4, day5
+from . import day1, day2, day3, day4, day5, day6
 
 @pytest.mark.parametrize('seq,sum,halfway', [
     ('1122', 3, False),
@@ -71,3 +71,10 @@ def test_day_4(data, answer, flag):
 ])
 def test_day_5(data, answer, flag):
     assert day5.solve(data, flag) == answer
+
+@pytest.mark.parametrize('data,answer,flag', [
+    ('''0	2	7	0''', 5, False),
+    ('''0   2   7   0''', 4, True),
+])
+def test_day_6(data, answer, flag):
+    assert day6.solve(data, flag) == answer
