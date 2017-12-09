@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from . import day1, day2, day3, day4, day5, day6, day7, day8
+from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
 
 @pytest.mark.parametrize('seq,sum,halfway', [
     ('1122', 3, False),
@@ -118,3 +118,24 @@ c inc -20 if c == 10''', 1, False),
 ])
 def test_day_8(data, answer, flag):
     assert day8.solve(data, flag) == answer
+
+@pytest.mark.parametrize('data,answer,flag', [
+    (r'{}', 1, False),
+    (r'{{{}}}', 6, False),
+    (r"{{},{}}", 5, False),
+    (r'{{{},{},{{}}}}', 16, False),
+    (r'{<a>,<a!!>,<a>,<a>}', 1, False),
+    (r'{{<a!!b>},{<ab>},{<ab>},{<ab>}}', 9, False),
+    (r'{{<!!>},{<!!!!>},{<!!>},{<!!>}}', 9, False),
+    (r'{{<a!>},{<a!>},{<a!>},{<ab>}}', 3, False),
+    (r'{<{o"i!a,<{i<a>}', 1, False),
+    (r'{<>}', 0, True),
+    (r'{<random characters>}', 17, True),
+    (r'<<<<>', 3, True),
+    (r'<{!>}>', 2, True),
+    (r'<!!>', 0, True),
+    (r'<!!!>>', 0, True),
+    (r'<{o"i!a,<{i<a>', 10, True),
+])
+def test_day_9(data, answer, flag):
+    assert day9.solve(data, flag) == answer
