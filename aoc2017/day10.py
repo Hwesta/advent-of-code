@@ -45,6 +45,7 @@ However, you should instead use the standard list size of 256 (with values 0 to 
 
 """
 from __future__ import print_function
+import functools
 import os
 
 class CircularList(list):
@@ -75,31 +76,54 @@ class CircularList(list):
             return
         return super().__setitem__(key % len(self), value)
 
-def solve(data, size=256, flag=False):
-    lengths = list(map(int, data.split(',')))
-    # print('lengths', lengths)
-    string = CircularList(range(size))
-    # print('string', string)
-    position = 0
-    skip = 0
-    # print('pos', position, 'skip', skip)
-
+def knothashround(lengths, string, position, skip):
     for length in lengths:
-        selected = string[position:position+length]
-        # print('selected', selected)
-        string[position:position+length] = list(reversed(selected))
-        # print('string', string)
+        selected = string[position:position + length]
+        string[position:position + length] = list(reversed(selected))
         position += length + skip
         position %= len(string)
         skip += 1
-        # print('pos', position, 'skip', skip)
+    return string, position, skip
 
-    return string[0] * string[1]
+def densify(sparse_hash):
+    dense_hash = []
+    for idx in range(0, 256, 16):
+        block = sparse_hash[idx:idx + 16]
+        reduced = functools.reduce(lambda x, y: x ^ y, block)
+        dense_hash.append(reduced)
+    return dense_hash
+
+def hexify(dense_hash):
+    strs = list(map(lambda num: f'{num:02x}', dense_hash))
+    return ''.join(strs)
+
+
+def solve(data, size=256, flag=False):
+    if flag:
+        lengths = list(map(ord, data)) + [17, 31, 73, 47, 23]
+    else:
+        lengths = list(map(int, data.split(',')))
+    string = CircularList(range(size))
+    position = 0
+    skip = 0
+
+    if not flag:
+        string, _, _ = knothashround(lengths, string, position, skip)
+        return string[0] * string[1]
+
+    for _ in range(64):
+        string, position, skip = knothashround(lengths, string, position, skip)
+
+    dense_hash = densify(string)
+
+    knot_hash = hexify(dense_hash)
+
+    return knot_hash
 
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day10.input')) as f:
         data = f.read().strip()
-    print(solve(data, flag=False))
-    # print(solve(data, flag=True))
+    print('The product of the first two numbers is', solve(data, flag=False))
+    print('The knot hash is', solve(data, flag=True))

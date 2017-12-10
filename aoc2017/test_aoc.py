@@ -141,8 +141,12 @@ def test_day_8(data, answer, flag):
 def test_day_9(data, answer, flag):
     assert day9.solve(data, flag) == answer
 
-@pytest.mark.parametrize('data,answer,flag', [
-    ('3,4,1,5', 12, False),
+@pytest.mark.parametrize('data,answer,size,flag', [
+    ('3,4,1,5', 12, 5, False),
+    ('', 'a2582a3a0e66e6e86e3812dcb672a272', 256, True),
+    ('AoC 2017', '33efeb34ea91902bb2f59c9920caa6cd', 256, True),
+    ('1,2,3', '3efbe78a8d82f29979031a4aa0b16a9d', 256, True),
+    ('1,2,4', '63960835bcdc130f0b66d7ff4f6a5a8e', 256, True),
 ])
-def test_day_10(data, answer, flag):
-    assert day10.solve(data, 5, flag) == answer
+def test_day_10(data, answer, size, flag):
+    assert day10.solve(data, size, flag) == answer
