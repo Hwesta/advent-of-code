@@ -28,3 +28,7 @@ with open('test_aoc.py', 'a') as f:
 def test_day_{day}(data, answer, flag):
     assert day{day}.solve(data, flag) == answer
 ''')
+
+# Create input file
+with open(f'day{day}.input', 'a') as f:
+    os.utime(f'day{day}.input', None)

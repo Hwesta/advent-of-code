@@ -62,7 +62,6 @@ class CircularList(list):
         return super().__getitem__(x % len(self))
 
     def __setitem__(self, key, value):
-        # print('key value', key, value, type(key), type(value))
         if isinstance(key, slice):
             start, stop, step = key.start, key.stop, key.step
             if start is None:
