@@ -225,20 +225,36 @@ def test_day_18():
         '####..',
     ], iterations=5, broken_lights=True) == 17
 
-def test_day_19():
-    assert day19.solve([
-        'H => HO',
-        'H => OH',
-        'O => HH',
-        '',
-        'HOH',
-    ]) == 4
-    assert day19.solve([
-        'HO => OH',
-        'O => HH',
-        '',
-        'HOH',
-    ]) == 2
+@pytest.mark.parametrize('data,answer,flag', [
+    (['H => HO',
+      'H => OH',
+      'O => HH',
+      '',
+      'HOH',
+    ], 4, False),
+    (['HO => OH',
+      'O => HH',
+      '',
+      'HOH',
+    ], 2, False),
+    (['e => H', 
+      'e => O',
+      'H => HO',
+      'H => OH',
+      'O => HH',
+      '',
+      'HOH'], 3, True),
+    (['e => H', 
+      'e => O',
+      'H => HO',
+      'H => OH',
+      'O => HH',
+      '',
+      'HOHOH'], 6, True),
+
+])
+def test_day_19(data,answer,flag):
+    assert day19.solve(data, flag) == answer
 
 def test_day_20():
     assert day20.solve('150') == 8

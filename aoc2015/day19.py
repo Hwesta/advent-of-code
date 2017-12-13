@@ -32,9 +32,24 @@ Your puzzle input describes all of the possible replacements and, at the bottom,
 
 """
 import os
+import heapq
+import re
 
+def generate_molecules(molecule, replacements):
+    new_molecules = set()
+    for key, value in replacements:
+        # Replace each char that matches in molecule, add to set
+        if key not in molecule:
+            continue
+        for idx in range(len(molecule)):
+            l = len(key)
+            if molecule[idx:idx+l] != key:
+                continue
+            nm = molecule[:idx] + value + molecule[idx+l:]
+            new_molecules.add(nm)
+    return new_molecules
 
-def solve(data):
+def solve(data, flag=False):
     replacements = []
 
     for line in data[:-2]:
@@ -45,24 +60,50 @@ def solve(data):
 
     print(molecule)
     print(replacements)
-    new_molecules = set()
-    for key, value in replacements:
-        # Replace each char that matches in molecule, add to set
-        if key not in molecule:
-            continue
-        print(key, molecule.count(key))
-        for idx in range(len(molecule)):
-            l = len(key)
-            if molecule[idx:idx+l] != key:
-                continue
-            nm = molecule[:idx] + value + molecule[idx+l:]
-            new_molecules.add(nm)
 
-    return len(new_molecules)
+    if not flag:
+        new_molecules = generate_molecules(molecule, replacements)
+        return len(new_molecules)
+    
+    heap = [(0, molecule)]
+    visited = set()
+    while heap:
+        steps, item = heapq.heappop(heap)
+        # print('steps item', steps, item)
+        for key, value in replacements:
+            # print(key, '->', value)
+            if key == 'e':
+                if item == value:
+                    # print('FOUND!!', steps+1)
+                    return steps + 1
+                continue
+            matches = [m.start() for m in re.finditer(value, item)]
+            # print('matches', matches)
+            for idx in matches:
+                l = len(value)
+                if value != item[idx:idx+l]:
+                    continue
+                nm = item[:idx] + key + item[idx+l:]
+                # print('new', nm)
+                if nm not in visited:
+                    # print('added')
+                    heapq.heappush(heap, (steps+1, nm))
+                    visited.add(nm)
+
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day19.input'), 'r') as f:
         data = f.read()
     data = data.splitlines()
-    print('There are', solve(data), 'new molecules from one replacement.')
+    # print('There are', solve(data), 'new molecules from one replacement.')
+    # data = ['e => H', 
+    #   'e => O',
+    #   'H => HO',
+    #   'H => OH',
+    #   'O => HH',
+    #   '',
+    #   'HOH']
+    print(solve(data, True))
+
+    # print(solve(data, True))
