@@ -64,8 +64,7 @@ from aoc2017.day12 import check_group
 
 
 def binify(h):
-    bins = [f'{int(num, 16):04b}' for num in h]
-    return ''.join(bins)
+    return f'{int(h, 16):0128b}'
 
 def solve(data, flag=False):
     used = 0
@@ -83,7 +82,7 @@ def solve(data, flag=False):
         return used
 
     # Generate adjacency lists for each location
-    pipes = {}
+    adjacency_list = {}
     for x in range(128):
         for y in range(128):
             if grid[x][y] == '0':
@@ -94,12 +93,12 @@ def solve(data, flag=False):
                 mody = y + dy
                 if 0 <= modx < 128 and 0 <= mody < 128 and grid[modx][mody] == '1':
                     connected.add((modx, mody))
-            pipes[(x, y)] = connected
+            adjacency_list[(x, y)] = connected
 
     # Use day12's solution to get connected groups
     groups = []
-    for program in pipes:
-        groups = check_group(program, pipes, groups)
+    for program in adjacency_list:
+        groups = check_group(program, adjacency_list, groups)
     return len(groups)
 
 
