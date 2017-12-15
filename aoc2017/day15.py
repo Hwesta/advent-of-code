@@ -103,9 +103,6 @@ def next_val(previous, factor, divide_by, multiple_of):
         candidate = (candidate * factor) % divide_by
     return candidate
 
-def binify(h):
-    return f'{h:016b}'
-
 def solve(data, flag=False):
     data = data.splitlines()
     a_val = int(data[0].split()[-1])
@@ -127,7 +124,7 @@ def solve(data, flag=False):
     for _ in range(pairs_count):
         a_val = next_val(a_val, a_factor, divide_by, a_filter)
         b_val = next_val(b_val, b_factor, divide_by, b_filter)
-        if binify(a_val)[-16:] == binify(b_val)[-16:]:
+        if a_val & 0xFFFF == b_val & 0xFFFF:
             matches += 1
 
     return matches
