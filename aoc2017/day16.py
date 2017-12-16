@@ -68,28 +68,31 @@ def solve(data, num_programs=16, flag=False):
     dancers = tuple(string.ascii_lowercase[:num_programs])
     data = tuple(data.split(','))
 
-    dancers = dance(dancers, data)
-
+    # Part 1: run once
     if not flag:
+        dancers = dance(dancers, data)
         return ''.join(dancers)
 
+    # Part 2
     # Tried running everything: way too slow
     # Tried memoizing input parsing & type conversions: still way too slow
     # Tried mapping input index to output index: doesn't work
     # Tried using functools.lru_cache() faster, but still slow
     # Realized there's only 30 items in lru_cache
     # Tried dictionary lookups: faster!
+    # From other's comments:
+    # Theres a cycle
+    # Find the cycle, then "run it" a billion times by divding the cycle into a billion
+    # Then run the remainder with modulus
 
-    memoize = {}
+    memoize = []
     iterations = 1000000000
-    for i in range(iterations - 1):
+    for i in range(iterations):
         if dancers in memoize:
-            dancers = memoize[dancers]
-            continue
-        key = dancers
+            dancers = memoize[iterations % i]
+            break
+        memoize.append(dancers)
         dancers = dance(dancers, data)
-        value = dancers
-        memoize[key] = value
 
     return ''.join(dancers)
 
@@ -98,5 +101,5 @@ if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day16.input')) as f:
         data = f.read().strip()
-    print(solve(data, 16, flag=False))
-    print(solve(data, 16, flag=True))
+    print("One dance leaves the dancers order as", solve(data, 16, flag=False))
+    print("A billion dances leaves the dancers order as", solve(data, 16, flag=True))
