@@ -212,6 +212,7 @@ def test_day_15(data, answer, flag):
 
 @pytest.mark.parametrize('data,answer,flag', [
     ('s1,x3/4,pe/b', 'baedc', False),
+    # ('s1,x3/4,pe/b', 'ceadb', True),
 ])
 def test_day_16(data, answer, flag):
     assert day16.solve(data, 5, flag) == answer
