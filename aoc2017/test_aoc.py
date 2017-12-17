@@ -219,6 +219,7 @@ def test_day_16(data, answer, flag):
 
 @pytest.mark.parametrize('data,answer,flag', [
     ('3', 638, False),
+    ('3', 1222153, True),
 ])
 def test_day_17(data, answer, flag):
     assert day17.solve(data, flag) == answer

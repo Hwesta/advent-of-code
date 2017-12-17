@@ -56,26 +56,35 @@ def solve(data, flag=False):
     arr = blist([0])
     posn = 0
 
-    if flag:
-        iterations = 50000000
-    else:
+    if not flag:  # part 1
         iterations = 2017
-
-    for i in range(1, iterations + 1):
-        posn = (posn + step ) % len(arr)
-        arr.insert(posn + 1, i)
-        posn += 1
-
-    if not flag:
+        for i in range(1, iterations + 1):
+            posn = (posn + step) % len(arr)
+            arr.insert(posn + 1, i)
+            posn += 1
         return arr[posn + 1]
     else:
-        zindex = arr.index(0)
-        return arr[(zindex + 1) % len(arr)]
+        # 0 is always first in list
+        # If land on 0, inserted after
+        # If land at end of list, inserted to end of list
+        iterations = 50000000
+        listlen = 1
+        second_elem = None
+        posn = 0
+        for i in range(1, iterations + 1):
+            posn = (posn + step) % listlen
+            # Insert would happen here
+            posn += 1
+            if posn == 1: # second elem
+                second_elem = i
+            listlen += 1
+
+        return second_elem
 
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day17.input')) as f:
         data = f.read().strip()
-    print(solve(data, False))
-    print(solve(data, True))
+    print('The value after 2017 is', solve(data, False))
+    print('The value after 0 is', solve(data, True))
