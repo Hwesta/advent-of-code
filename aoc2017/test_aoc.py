@@ -7,7 +7,7 @@ import pytest
 
 from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
 from . import day10, day11, day12, day13, day14, day15, day16, day17
-from . import day18
+from . import day18, day19
 
 @pytest.mark.parametrize('seq,sum,halfway', [
     ('1122', 3, False),
@@ -239,3 +239,22 @@ jgz a -2''', 4, False),
 ])
 def test_day_18(data, answer, flag):
     assert day18.solve(data, flag) == answer
+
+@pytest.mark.parametrize('data,answer,flag', [
+    ('''     |
+     |  +--+
+     A  |  C
+ F---|----E|--+
+     |  |  |  D
+     +B-+  +--+
+''', 'ABCDEF', False),
+    ('''     |
+     |  +--+
+     A  |  C
+ F---|----E|--+
+     |  |  |  D
+     +B-+  +--+
+''', 38, True),
+])
+def test_day_19(data, answer, flag):
+    assert day19.solve(data, flag) == answer
