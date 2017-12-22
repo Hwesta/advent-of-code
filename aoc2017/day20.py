@@ -83,30 +83,41 @@ def solve(data, flag=False):
             'position': [int(x) for x in position.split(',')],
         })
 
-    for i in range(10000):
+    for i in range(1000):
         same_spot = {}
         for p, particle in enumerate(particles):
+            if particle is None:
+                continue
             for dimension in range(3):
                 particle['velocity'][dimension] += particle['acceleration'][dimension]
                 particle['position'][dimension] += particle['velocity'][dimension]
-        if i % 1000 == 0:
-            print(i)
+            if flag:
+                loc = tuple(particle['position'])
+                if loc in same_spot:
+                    particles[p] = None
+                    particles[same_spot[loc]] = None
+                else:
+                    same_spot[loc] = p
 
-    min_distance = 100000000000
+    min_distance = 10000000
     min_particle = None
     for p, particle in enumerate(particles):
+        if particle is None:
+            continue
         distance = sum(abs(x) for x in particle['position'])
         if distance < min_distance:
             min_distance = distance
             min_particle = p
 
-    # p2: 344 too low, 931 too high
-    return min_particle
+    if flag:
+        return len([p for p in particles if p])
+    else:
+        return min_particle
 
 
 if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day20.input')) as f:
         data = f.read().strip()
-    print(solve(data, False))
-    # print(solve(data, True))
+    print(solve(data, False), 'stays closest to 0,0,0')
+    print('There are', solve(data, True), 'particles left after all collisions.')
