@@ -222,51 +222,35 @@ def solve(data, flag=False):
     infected_count = 0
     x = y = 0
 
-    turn_right = {
-        'U': 'R',
-        'R': 'D',
-        'D': 'L',
-        'L': 'U'
+    turn_right = {'U': 'R', 'R': 'D', 'D': 'L', 'L': 'U'}
+    turn_left = {'U': 'L', 'L': 'D', 'D': 'R', 'R': 'U'}
+    reverse = {'U': 'D', 'D': 'U', 'R': 'L', 'L': 'R'}
+    identity = {'U': 'U', 'D': 'D', 'R': 'R', 'L': 'L'}
+    next_direction = {
+        '#': turn_right,
+        '.': turn_left,
+        'F': reverse,
+        'W': identity
     }
-    turn_left = {
-        'U': 'L',
-        'L': 'D',
-        'D': 'R',
-        'R': 'U',
-    }
-    reverse = {
-        'U': 'D',
-        'D': 'U',
-        'R': 'L',
-        'L': 'R',
-    }
+
     if flag:
         iterations = 10000000
+        next_state = {
+            '.': 'W',
+            'W': '#',
+            '#': 'F',
+            'F': '.'
+        }
     else:
         iterations = 10000
+        next_state = {'#': '.', '.': '#'}
 
     for i in range(iterations):
+        this_node = grid[x, y]
+        direction = next_direction[this_node][direction]
+        grid[x, y] = next_state[this_node]
         if grid[x, y] == '#':
-            direction = turn_right[direction]
-            if flag:
-                grid[x, y] = 'F'
-            else:
-                grid[x, y] = '.'
-        elif grid[x, y] == '.':
-            direction = turn_left[direction]
-            if flag:
-                grid[x, y] = 'W'
-            else:
-                grid[x, y] = '#'
-                infected_count += 1
-        elif grid[x, y] == 'W':
-            direction = direction
-            grid[x, y] = '#'
             infected_count += 1
-        elif grid[x, y] == 'F':
-            direction = reverse[direction]
-            grid[x, y] = '.'
-
         x, y = move_direction(x, y, direction)
 
     return infected_count
