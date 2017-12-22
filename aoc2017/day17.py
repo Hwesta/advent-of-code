@@ -49,11 +49,10 @@ What is the value after 0 the moment 50000000 is inserted?
 """
 from __future__ import print_function
 import os
-from blist import blist
 
 def solve(data, flag=False):
     step = int(data)
-    arr = blist([0])
+    arr = [0]
     posn = 0
 
     if not flag:  # part 1
@@ -64,6 +63,9 @@ def solve(data, flag=False):
             posn += 1
         return arr[posn + 1]
     else:
+        # First implementation was like part 1, but used blist
+        # blist: external package that uses tree structure for list interface
+        # blist doesn't install in pypy3 though
         # 0 is always first in list
         # If land on 0, inserted after
         # If land at end of list, inserted to end of list
