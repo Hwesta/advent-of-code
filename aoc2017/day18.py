@@ -85,7 +85,7 @@ def compute(instructions, registers, pc, input_buffer, output_buffer):
             return registers[x]
     # print('input', input_buffer)
     # print('output_buffer', output_buffer)
-    while pc < len(instructions):
+    while True:
         # print('registers', registers)
         # print('pc', pc, instructions[pc])
         row = instructions[pc].split()
@@ -99,17 +99,16 @@ def compute(instructions, registers, pc, input_buffer, output_buffer):
         elif action == 'mod':
             registers[row[1]] %= get_value(row[2])
         elif action == 'jgz':
-            if get_value(row[1]) != 0:
+            if get_value(row[1]) > 0:
                 pc += get_value(row[2])
                 pc -= 1   # Compensate for adding to it later
         elif action == 'snd':
-            output_buffer.append(registers[row[1]])
-            # print('output_buffer', output_buffer)
+            output_buffer.append(get_value(row[1]))
         elif action == 'rcv':
             if input_buffer:
                 registers[row[1]] = input_buffer.pop(0)
             else:
-                # Return state?
+                # Return state
                 return registers, pc, output_buffer
 
         pc += 1
@@ -120,7 +119,6 @@ def solve(data, flag=False):
     pc = 0
     input_buffer = []
     output_buffer = []
-    print('instructions', instructions)
 
     if not flag:
         _, _, output_buffer = compute(
@@ -129,7 +127,6 @@ def solve(data, flag=False):
 
     # Run until one runs out of input buffer
     # Run the other
-    # While A's output buffer is empty?
     registers['p'] = 0
 
     registers2 = defaultdict(int)
@@ -140,29 +137,26 @@ def solve(data, flag=False):
     i = 0
     sentcount = 0
     while True:
-        # print('RUN PROG 1')
+        # Run program 1 until it needs input
         registers, pc, output_buffer = compute(
             instructions, registers, pc, output_buffer2, output_buffer)
-        # print('output_buffer', output_buffer)
-
-        print('bufferlens', len(output_buffer), len(output_buffer2))
-        print('buffers', output_buffer, output_buffer2)
         if not output_buffer and not output_buffer2:
             break
 
-        # print("RUN PROG 2")
+        # Feed program 2 input from program 1
+        # Run until needs input
         registers2, pc2, output_buffer2 = compute(
             instructions, registers2, pc2, output_buffer, output_buffer2)
         sentcount += len(output_buffer2)
-        print('sentcount', sentcount)
-        print('bufferlens', len(output_buffer), len(output_buffer2))
 
-        print('buffers', output_buffer, output_buffer2)
+        i+=1
+        if i % 1000 == 0:
+            print(i)
+
+        # Check if we're done
         if not output_buffer and not output_buffer2:
             break
 
-    # 2050796 too high
-    # 127 too low
     return sentcount
 
 
@@ -170,5 +164,5 @@ if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day18.input')) as f:
         data = f.read().strip()
-    print(solve(data, False))
-    print(solve(data, True))
+    print('The value of the recovered frequency is', solve(data, False))
+    print('The second program sends', solve(data, True), 'values.')

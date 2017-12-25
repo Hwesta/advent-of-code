@@ -236,6 +236,13 @@ rcv a
 jgz a -1
 set a 1
 jgz a -2''', 4, False),
+    ('''snd 1
+snd 2
+snd p
+rcv a
+rcv b
+rcv c
+rcv d''', 3, True),
 ])
 def test_day_18(data, answer, flag):
     assert day18.solve(data, flag) == answer
