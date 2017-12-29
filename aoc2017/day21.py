@@ -122,8 +122,14 @@ def print_grid(g):
     for row in g:
         print(''.join(str(e) for e in row))
 
-def solve(data, iterations=5, flag=False):
-    print('iterations', iterations)
+def solve(data, iterations=None, flag=False):
+    if iterations:
+        iterations = iterations
+    elif flag:
+        iterations = 18
+    else:
+        iterations = 5
+    # print('iterations', iterations)
     # Parse instructions
     enhancements = {}
     for row in data.splitlines():
@@ -134,7 +140,7 @@ def solve(data, iterations=5, flag=False):
             enhancements[rule] = rhs
 
     original = tupleify('.#./..#/###')
-    print_grid(original)
+
     # For iterations
     for _ in range(iterations):
         # Divide into 2/3 size squares
@@ -145,30 +151,31 @@ def solve(data, iterations=5, flag=False):
         elif size % 3 == 0:
             split = 3
             new_size = size * 4 // 3
-        print('split', split, 'sz', new_size)
+        # print('split', split, 'new size', new_size)
         # Make new grid to put them in
         new_grid = []
         for _ in range(new_size):
-            new_grid.append([None] * new_size)
+            new_grid.append(['!'] * new_size)
         # Break into squares
         new_x = new_y = 0
-        for x in range(0, size, split):
-            for y in range(0, size, split):
+        for y in range(0, size, split):
+            for x in range(0, size, split):
                 # Get square
                 square = tuple(r[x:x+split] for r in original[y:y+split])
                 # Apply rule
                 new_square = enhancements[square]
-                print('ns', new_square)
                 # Assign to new_grid
-                for dy, row in enumerate(new_square):
-                    for dx, elem in enumerate(row):
-                        new_grid[x+dx][y+dy] = elem
-            #     new_y += split + 1
-            # new_y = 0
-            # new_x += split + 1
+                for dx, row in enumerate(new_square):
+                    for dy, elem in enumerate(row):
+                        new_grid[new_x+dx][new_y+dy] = elem
+                new_y += split + 1
+
+            new_y = 0
+            new_x += split + 1
 
         original = tuple(tuple(x) for x in new_grid)
-        print_grid(original)
+        # print('done iteration:')
+        # print_grid(original)
 
     # Sum on pixels
     count = 0
@@ -182,5 +189,5 @@ if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day21.input')) as f:
         data = f.read().strip()
-    print(solve(data, False))
-    # print(solve(data, True))
+    print(solve(data, flag=False), 'pixels are on after 5 iterations.')
+    print(solve(data, flag=True), 'pixels are on after 18 iterations.')

@@ -285,7 +285,6 @@ def test_day_20(data, answer, flag):
 ])
 def test_day_21(data, answer, iterations, flag):
     assert day21.solve(data, iterations, flag) == answer
-    assert False
 
 @pytest.mark.parametrize('data,answer,flag', [
     ('''..#
