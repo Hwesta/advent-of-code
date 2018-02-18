@@ -4,16 +4,11 @@ require 'set'
 # Based on c, update x and y
 def move(char, x, y)
   case char
-  when '^'
-    x += 1
-  when 'v'
-    x -= 1
-  when '>'
-    y += 1
-  when '<'
-    y -= 1
+  when '^' then [x + 1, y]
+  when 'v' then [x - 1, y]
+  when '>' then [x, y + 1]
+  when '<' then [x, y - 1]
   end
-  [x, y]
 end
 
 def solve(data)
