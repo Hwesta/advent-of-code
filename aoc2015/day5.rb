@@ -4,10 +4,7 @@ def solve(data)
   data.each_line.count do |line|
     line.count('aeiou') >= 3 &&
       /(.)\1/.match(line) &&
-      !line.include?('ab') &&
-      !line.include?('cd') &&
-      !line.include?('pq') &&
-      !line.include?('xy')
+      line.scan(/ab|cd|pq|xy/).length.zero?
   end
 end
 
