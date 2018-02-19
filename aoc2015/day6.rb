@@ -26,15 +26,6 @@ def solve(data)
   lights.flatten.count(true)
 end
 
-def update_light2(value, action)
-  case action
-  when 'turn on' then value + 1
-  when 'turn off' then [value - 1, 0].max
-  when 'toggle' then value + 2
-  end
-end
-
-
 def solve2(data)
   lights = []
   (0..999).each do |i|
@@ -42,12 +33,18 @@ def solve2(data)
   end
 
   data.each_line do |line|
-    action, ux, uy, lx, ly = /(.*) (\d+),(\d+) through (\d+),(\d+)/.match(
-      line
-    )[1..5]
+    ux, uy, lx, ly = line.scan(/\d+/).map(&:to_i)
 
-    (ux.to_i..lx.to_i).to_a.product((uy.to_i..ly.to_i).to_a) do |x, y|
-      lights[x][y] = update_light2(lights[x][y], action)
+    (ux..lx).each do |x|
+      (uy..ly).each do |y|
+        if line.start_with?('turn on')
+          lights[x][y] += 1
+        elsif line.start_with?('turn off')
+          lights[x][y] = [lights[x][y] - 1, 0].max
+        elsif line.start_with?('toggle')
+          lights[x][y] += 2
+        end
+      end
     end
   end
   lights.flatten.sum
