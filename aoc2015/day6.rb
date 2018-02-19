@@ -15,6 +15,10 @@ def solve(data)
   end
 
   data.each_line do |line|
+    # Tried switching to
+    # m = /(?<action>.*) (?<ux>\d+),(?<uy>\d+) through (?<lx>\d+),(?<ly>\d+)/.match(line)
+    # And accesing via `m[:action]`
+    # But it ran a lot slower; ~3.5 seconds vs ~5.6 seconds
     action, ux, uy, lx, ly = /(.*) (\d+),(\d+) through (\d+),(\d+)/.match(
       line
     )[1..5]
