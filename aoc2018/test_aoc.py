@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from . import day1
+from . import day1, day2
 
 
 @pytest.mark.parametrize(
@@ -22,3 +22,10 @@ from . import day1
 )
 def test_day_1(data, answer, flag):
     assert day1.solve(data, flag) == answer
+
+@pytest.mark.parametrize('data,answer,flag', [
+    (["abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab"], 12, False),
+    (["abcde", "fghij", "klmno", "pqrst", "fguij", "axcye", "wvxyz"], "fgij", True)
+])
+def test_day_2(data, answer, flag):
+    assert day2.solve(data, flag) == answer
