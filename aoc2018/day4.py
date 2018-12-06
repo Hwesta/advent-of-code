@@ -88,7 +88,7 @@ def solve(data, flag=False):
     # print(f"guard_schedule {guard_schedule}")
 
     # Find minutes the guards are asleep
-    guards = collections.defaultdict(dict)
+    guards = {}
     current_guard = None
     asleep = None
     for time in sorted(guard_schedule.keys()):
@@ -96,60 +96,56 @@ def solve(data, flag=False):
         # print(f"time {time} val {state}")
         if isinstance(state, int):
             current_guard = state
+            if current_guard not in guards:
+                guards[current_guard] = [0] * 60
             asleep = None
-            continue
-        if state == SLEEP:
+        elif state == SLEEP:
             asleep = (time.minute, )
         elif asleep and state == AWAKE:
             # Add date to that min's sleepy list
-            day = time.date()
-            guard_dict = guards[current_guard]
             sleep_time = asleep[0]
             for minute in range(sleep_time, time.minute):
-                days_sleeping = guard_dict.get(minute, set())
-                days_sleeping.add((time.month, time.day))
-                guard_dict[minute] = days_sleeping
-            guards[current_guard] = guard_dict  # Why do I have to do this?
+                guards[current_guard][minute] += 1
             asleep = None
 
-    print(f"guards {guards}")
+    # print(f"guards {guards}")
     if not flag:  # Part 1
         # Find the guard that slept the most
         max_sleeptime = 0
         sleepy_guard = None
         for guard, minutes in guards.items():
-            sleeptime = sum(len(days_sleeping) for days_sleeping in minutes.values())
+            sleeptime = sum(minutes)
             if sleeptime > max_sleeptime:
                 max_sleeptime = sleeptime
                 sleepy_guard = guard
-
-        print(f"sleepy guard {sleepy_guard} {guards[sleepy_guard]}")
+        # print(f"SLEPT THE MOST {sleepy_guard} {enumerate(guards[sleepy_guard])}")
 
         # Find the minute they sleep the most
-        sgdict = guards[sleepy_guard]
-        sleepiest_min = max(sgdict, key=(lambda key: len(sgdict[key])))
-        print(f"sleepiest_min {sleepiest_min}")
+        guard_mins = guards[sleepy_guard]
+        sleepiest_min = guard_mins.index(max(guard_mins))
+        # print(f"SLEEPIEST MIN {sleepiest_min}")
     else:  # Part 2
-        sleepiest_min = -1
         sleepy_guard = None
+        sleep_min_count = 0
+        sleepiest_min = None
         for guard, minutes in guards.items():
-            print('GUARD', guard)
-            for minute in sorted(minutes, key=lambda x: len(minutes[x]), reverse=True):
-                print(minute, minutes[minute])
+            # print('GUARD', guard)
+            # Find sleepiest minute
+            guard_mins = guards[guard]
+            guard_sleepiest_min = guard_mins.index(max(guard_mins))
+            # print("SLEEPIEST MIN", guard_sleepiest_min)
 
-            maxmin = max(minutes, key=lambda x: len(minutes[x]))
-            print("MAXMIN", maxmin)
-            if maxmin > sleepiest_min:
-                sleepiest_min = maxmin
+            if minutes[guard_sleepiest_min] > sleep_min_count:
+                sleep_min_count = minutes[guard_sleepiest_min]
+                sleepiest_min = guard_sleepiest_min
                 sleepy_guard = guard
 
-    print(f"min {sleepiest_min} guard {sleepy_guard}")
+    # print(f"Minute: {sleepiest_min}, Guard {sleepy_guard}")
     return sleepiest_min * sleepy_guard
-    # 160326 too high
 
 if __name__ == "__main__":
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, "day4.input")) as f:
         data = f.read().strip().splitlines()
-    # print(solve(data, False))
-    print(solve(data, True))
+    print("For the guard that sleeps the most, the ID X minute they sleep the most is", solve(data, False))
+    print("For the guard that slept the most in a single minute, the ID X the minute they slept the most is", solve(data, True))
