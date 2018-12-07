@@ -26,30 +26,65 @@ After all possible reactions, the resulting polymer contains 10 units.
 
 How many units remain after fully reacting the polymer you scanned?
 
+--- Part Two ---
+
+Time to improve the polymer.
+
+One of the unit types is causing problems; it's preventing the polymer from collapsing as much as it should. Your goal is to figure out which unit type is causing the most problems, remove all instances of it (regardless of polarity), fully react the remaining polymer, and measure its length.
+
+For example, again using the polymer dabAcCaCBAcCcaDA from above:
+
+    Removing all A/a units produces dbcCCBcCcD. Fully reacting this polymer produces dbCBcD, which has length 6.
+    Removing all B/b units produces daAcCaCAcCcaDA. Fully reacting this polymer produces daCAcaDA, which has length 8.
+    Removing all C/c units produces dabAaBAaDA. Fully reacting this polymer produces daDA, which has length 4.
+    Removing all D/d units produces abAcCaCBAcCcaA. Fully reacting this polymer produces abCBAc, which has length 6.
+
+In this example, removing all C/c units was best, producing the answer 4.
+
+What is the length of the shortest polymer you can produce by removing all units of exactly one type and fully reacting the result?
+
 """
 from __future__ import print_function
 import os
-import re
+import string
+
+def react(data):
+    done = False
+    while not done:
+        done = True
+        length = len(data)
+        for letter in string.ascii_lowercase:
+            startlen = length
+            # aA
+            pair = letter + letter.upper()
+            data = ''.join(data.split(pair))
+            # Aa
+            pair = letter.upper() + letter
+            data = ''.join(data.split(pair))
+            length = len(data)
+            if startlen != length:
+                done = False
+    return len(data)
+
 
 
 def solve(data, flag=False):
-    # print("data", data)
-    done = False
-    while not done:
-        for idx, (a, b) in enumerate(zip(data, data[1:])):
-            if a != b and a.lower() == b.lower():
-                # print(f"removing {a} {b} ({idx})")
-                data = data[:idx] + data[idx+2:]
-                # print("data", data)
-                break
-        else:
-            done = True
-    return len(data)
+    if flag:
+        minlength = len(data)
+        for letter in string.ascii_lowercase:
+            trimmed_data = ''.join(data.split(letter))
+            trimmed_data = ''.join(trimmed_data.split(letter.upper()))
+            candidate_minlenght = react(trimmed_data)
+            if candidate_minlenght < minlength:
+                minlength = candidate_minlenght
+        return minlength
+    else:
+        return react(data)
 
 
 if __name__ == "__main__":
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, "day5.input")) as f:
         data = f.read().strip()
-    print(solve(data, False))
-    # print(solve(data, True))
+    print(solve(data, False), "units remain after fully reacting the polymer.")
+    print("the shortest fully reacted polymer is", solve(data, True))
