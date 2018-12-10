@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from . import day1, day2, day3, day4, day5
+from . import day1, day2, day3, day4, day5, day6
 
 
 @pytest.mark.parametrize(
@@ -81,3 +81,10 @@ def test_day_4(data, answer, flag):
 ])
 def test_day_5(data, answer, flag):
     assert day5.solve(data, flag) == answer
+
+@pytest.mark.parametrize('data,answer,flag', [
+    (["1, 1", "1, 6", "8, 3", "3, 4", "5, 5", "8, 9"], 17, False),
+    (["1, 1", "1, 6", "8, 3", "3, 4", "5, 5", "8, 9"], 16, True),
+])
+def test_day_6(data, answer, flag):
+    assert day6.solve(data, flag) == answer
