@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from . import day1, day2, day3, day4, day5, day6
+from . import day1, day2, day3, day4, day5, day6, day7
 
 
 @pytest.mark.parametrize(
@@ -88,3 +88,17 @@ def test_day_5(data, answer, flag):
 ])
 def test_day_6(data, answer, flag):
     assert day6.solve(data, flag) == answer
+
+@pytest.mark.parametrize('data,answer,flag', [
+    ([
+        "Step C must be finished before step A can begin.",
+        "Step C must be finished before step F can begin.",
+        "Step A must be finished before step B can begin.",
+        "Step A must be finished before step D can begin.",
+        "Step B must be finished before step E can begin.",
+        "Step D must be finished before step E can begin.",
+        "Step F must be finished before step E can begin.",
+    ], "CABDFE", False),
+])
+def test_day_7(data, answer, flag):
+    assert day7.solve(data, flag) == answer
