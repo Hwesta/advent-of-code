@@ -36,6 +36,25 @@ The first check done on the license file is to simply add up all of the metadata
 
 What is the sum of all metadata entries?
 
+--- Part Two ---
+
+The second check is slightly more complicated: you need to find the value of the root node (A in the example above).
+
+The value of a node depends on whether it has child nodes.
+
+If a node has no child nodes, its value is the sum of its metadata entries. So, the value of node B is 10+11+12=33, and the value of node D is 99.
+
+However, if a node does have child nodes, the metadata entries become indexes which refer to those child nodes. A metadata entry of 1 refers to the first child node, 2 to the second, 3 to the third, and so on. The value of this node is the sum of the values of the child nodes referenced by the metadata entries. If a referenced child node does not exist, that reference is skipped. A child node can be referenced multiple time and counts each time it is referenced. A metadata entry of 0 does not refer to any child node.
+
+For example, again using the above nodes:
+
+    Node C has one metadata entry, 2. Because node C has only one child node, 2 references a child node which does not exist, and so the value of node C is 0.
+    Node A has three metadata entries: 1, 1, and 2. The 1 references node A's first child node, B, and the 2 references node A's second child node, C. Because node B has a value of 33 and node C has a value of 0, the value of node A is 33+33+0=66.
+
+So, in this example, the value of the root node is 66.
+
+What is the value of the root node?
+
 """
 from __future__ import print_function
 import os
@@ -59,27 +78,39 @@ def parse_node(node):
         child = parse_node(node[parsed:])
         parsed += child["len"]
         children.append(child)
-    # children = parse_node(node[2:-metadata_count])
+    # print("children", children)
 
     metadata = node[parsed:parsed + metadata_count]
     metadata_value += sum(metadata)
 
+    value = 0
+    if child_count == 0:
+        value = sum(metadata)
+    else:
+        for idx in metadata:
+            if idx > len(children):
+                continue
+            value += children[idx - 1]["value"]
+
     length = parsed + metadata_count
-    node_info = {"len": length, "child_count": child_count, "metadata_count": metadata_count, "metadata": metadata, "children": children}
+    node_info = {"len": length, "child_count": child_count, "metadata_count": metadata_count, "metadata": metadata, "children": children, "value": value}
     # print('node info', node_info)
     return node_info
 
 
 def solve(data, flag=False):
     data = list(map(int, data.split()))
-    parse_node(data)
+    root_node = parse_node(data)
 
-    return metadata_value
+    if not flag:
+        return metadata_value
+    if flag:
+        return root_node["value"]
 
 
 if __name__ == "__main__":
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, "day8.input")) as f:
         data = f.read().strip()
-    print(solve(data, False))
-    # print(solve(data, True))
+    print("The sum of all the metadata entries is", solve(data, False))
+    print("The value of the root node is", solve(data, True))

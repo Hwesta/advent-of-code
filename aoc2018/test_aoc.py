@@ -114,6 +114,7 @@ def test_day_7(data, answer, flag):
 
 @pytest.mark.parametrize('data,answer,flag', [
     ("2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2", 138, False),
+    ("2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2", 66, True),
 ])
 def test_day_8(data, answer, flag):
     assert day8.solve(data, flag) == answer
