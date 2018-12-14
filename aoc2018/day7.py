@@ -42,15 +42,126 @@ So, in this example, the correct order is CABDFE.
 
 In what order should the steps in your instructions be completed?
 
+--- Part Two ---
+
+As you're about to begin construction, four of the Elves offer to help. "The sun will set soon; it'll go faster if we work together." Now, you need to account for multiple people working on steps simultaneously. If multiple steps are available, workers should still begin them in alphabetical order.
+
+Each step takes 60 seconds plus an amount corresponding to its letter: A=1, B=2, C=3, and so on. So, step A takes 60+1=61 seconds, while step Z takes 60+26=86 seconds. No time is required between steps.
+
+To simplify things for the example, however, suppose you only have help from one Elf (a total of two workers) and that each step takes 60 fewer seconds (so that step A takes 1 second and step Z takes 26 seconds). Then, using the same instructions as above, this is how each second would be spent:
+
+Second   Worker 1   Worker 2   Done
+   0        C          .
+   1        C          .
+   2        C          .
+   3        A          F       C
+   4        B          F       CA
+   5        B          F       CA
+   6        D          F       CAB
+   7        D          F       CAB
+   8        D          F       CAB
+   9        D          .       CABF
+  10        E          .       CABFD
+  11        E          .       CABFD
+  12        E          .       CABFD
+  13        E          .       CABFD
+  14        E          .       CABFD
+  15        .          .       CABFDE
+
+Each row represents one second of time. The Second column identifies how many seconds have passed as of the beginning of that second. Each worker column shows the step that worker is currently doing (or . if they are idle). The Done column shows completed steps.
+
+Note that the order of the steps has changed; this is because steps now take time to finish and multiple workers can begin multiple steps simultaneously.
+
+In this example, it would take 15 seconds for two workers to complete these steps.
+
+With 5 workers and the 60+ second step durations described above, how long will it take to complete all of the steps?
 
 """
 from __future__ import print_function
 import collections
 import os
+import string
+import typing as t
+
+
+def get_next_choice(next_choices):
+    """Get from next list in sorted order."""
+    next_choices.sort(reverse=True)
+    item = next_choices.pop()
+    # print("item", item)
+    return next_choices, item
+
+
+def update_next_choices(item, steps, solution, next_choices):
+    solution = set(solution)
+    # Add to candidate next letters
+    for k, v in steps.items():
+        # If now satisfied
+        # print('checking', k, v)
+        if item in v["needs"] and v["needs"] <= solution:
+            next_choices.append(k)
+            # print('next choices', next_choices)
+    return next_choices
+
+
+def solve_part1(steps, next_choices):
+    """Run each step immediately once the previous letters are complete"""
+    # Run, add supports to update list if all deps done
+    solution = []
+    while next_choices:
+        next_choices, item = get_next_choice(next_choices)
+        solution.append(item)
+        # print('solution', solution)
+
+        # Add to candidate next letters
+        next_choices = update_next_choices(item, steps, solution, next_choices)
+
+    return ''.join(solution)
+
+
+def solve_part2(steps, next_choices: t.List):
+    # Workers is a list of workers (index = ID) and what letter they're doing
+    workers = [None] * 2  # Test: 2, real: 5
+    solution = []
+    tick = -1
+    tick_alert = collections.defaultdict(list)  # Alert that a worker is done on a tick
+
+    # Run while there's more work to be done or at least one worker is busy
+    while next_choices or any(workers):
+        tick += 1
+        # One loop is a tick
+        # print('tick', tick)
+
+        # Check who's done at this tick
+        for worker_index in tick_alert[tick]:
+            item = workers[worker_index]
+            # print(f"worker {worker_index} finished {item}")
+            solution.append(item)
+            # print("solution", solution)
+            workers[worker_index] = None
+            next_choices = update_next_choices(item, steps, solution, next_choices)
+
+        # # All workers busy, advance
+        if workers.count(None) == 0:
+            continue
+        # Assign free workers new work
+        for worker_index, letter in enumerate(workers):
+            if letter is None and next_choices:
+                # print(f"worker {worker_index} is free")
+                next_choices, item = get_next_choice(next_choices)
+                workers[worker_index] = item
+                alert_tick = tick + string.ascii_uppercase.index(item) + 1 # + 60
+                tick_alert[alert_tick].append(worker_index)
+                # print(f"worker {worker_index} now working on {item} until {alert_tick}")
+        if tick >= 500000:
+            break
+
+    return tick
+    # 218 too low
 
 
 def solve(data, flag=False):
-
+    """Parse the data into needs/supports, run for each part"""
     def default_steps():
         return {"needs": set(), "supports": set()}
     # Generate graph of dependencies & supports
@@ -69,25 +180,10 @@ def solve(data, flag=False):
         if not v["needs"]:
             next_choices.append(k)
 
-    # Run, add supports to update list if all deps done
-    solution = []
-    while next_choices:
-        # Get from update list in sorted order
-        next_choices.sort(reverse=True)
-        item = next_choices.pop()
-        # print("item", item)
-        solution.append(item)
-        # print('solution', solution)
-
-        # Add to candidate next letters
-        for k, v in steps.items():
-            # If now satisfied
-            # print('checking', k, v)
-            if item in v["needs"] and v["needs"] <= set(solution):
-                next_choices.append(k)
-                # print('next choices', next_choices)
-
-    return ''.join(solution)
+    if not flag:  # Part 1
+        return solve_part1(steps, next_choices)
+    else:
+        return solve_part2(steps, next_choices)
 
 
 if __name__ == "__main__":
@@ -95,4 +191,4 @@ if __name__ == "__main__":
     with open(os.path.join(this_dir, "day7.input")) as f:
         data = f.read().strip().splitlines()
     print("The order the steps are completed is", solve(data, False))
-    # print(solve(data, True))
+    print("The amount of time it takes with workers is", solve(data, True))
