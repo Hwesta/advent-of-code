@@ -5,7 +5,7 @@ import unittest
 
 import pytest
 
-from . import day1, day2, day3, day4, day5, day6, day7, day8
+from . import day1, day2, day3, day4, day5, day6, day7, day8, day9
 
 
 @pytest.mark.parametrize(
@@ -118,3 +118,14 @@ def test_day_7(data, answer, flag):
 ])
 def test_day_8(data, answer, flag):
     assert day8.solve(data, flag) == answer
+
+@pytest.mark.parametrize('data,answer,flag', [
+    ("10 players; last marble is worth 1618 points", 8317, False),
+    ("13 players; last marble is worth 7999 points", 146373, False),
+    ("17 players; last marble is worth 1104 points", 2764, False),
+    ("21 players; last marble is worth 6111 points", 54718, False),
+    ("30 players; last marble is worth 5807 points", 37305, False),
+    ("9 players; last marble is worth 25 points", 32, False),
+])
+def test_day_9(data, answer, flag):
+    assert day9.solve(data, flag) == answer
