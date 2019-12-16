@@ -62,25 +62,20 @@
 # (Calculate the fuel requirements for each module separately, then add them all
 # up at the end.)
 
-def all_fuel_for(mass)
+def fuel_for(mass, recurse: false)
   return 0 if mass <= 0
 
-  fuel_mass = fuel_for(mass)
-  fuel_mass + all_fuel_for(fuel_mass)
+  fuel_mass = [(mass.to_i / 3).floor - 2, 0].max
+  fuel_mass += fuel_for(fuel_mass, recurse: recurse) if recurse
+  fuel_mass
 end
 
-def fuel_for(mass)
-  [(mass.to_i / 3).floor - 2, 0].max
-end
-
-def process(input)
-  answer = input.map { |mass| fuel_for mass }.sum
-  puts "The ship needs #{answer} fuel"
-  part2 = input.map { |mass| all_fuel_for mass }.sum
-  puts "The ship needs #{part2} fuel, including fuel for fuel"
+def solve(input, part2: false)
+  input.map { |mass| fuel_for(mass, recurse: part2) }.sum
 end
 
 if $PROGRAM_NAME == __FILE__
   input = File.readlines('day1.input').map(&:to_i)
-  process input
+  puts "The ship needs #{solve(input)} fuel"
+  puts "The ship needs #{solve(input, part2: true)} fuel, including fuel for the fuel"
 end

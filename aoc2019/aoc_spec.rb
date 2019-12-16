@@ -23,13 +23,13 @@ RSpec.describe 'Advent of Code' do
         expect(fuel_for(2)).to eq(0)
       end
       it 'calculates all fuel' do
-        expect(all_fuel_for(14)).to eq(2)
+        expect(fuel_for(14, recurse: true)).to eq(2)
       end
       it 'calculates all fuel' do
-        expect(all_fuel_for(1969)).to eq(966)
+        expect(fuel_for(1969, recurse: true)).to eq(966)
       end
       it 'calculates all fuel' do
-        expect(all_fuel_for(100756)).to eq(50346)
+        expect(fuel_for(100756, recurse: true)).to eq(50346)
       end
     end
   end
