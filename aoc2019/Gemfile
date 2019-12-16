@@ -11,3 +11,5 @@ gem "rspec", "~> 3.9"
 gem "pry-byebug", "~> 3.7"
 
 gem "irb", "~> 1.2"
+
+gem "rspec-parameterized", "~> 0.4.2"
