@@ -73,7 +73,6 @@
 
 # Find the input noun and verb that cause the program to produce the output 19690720. What is 100 * noun + verb? (For example, if noun=12 and verb=2, the answer would be 1202.)
 
-
 # INTCODE interpreter
 class Program
   def initialize(input)
@@ -82,29 +81,33 @@ class Program
   end
 
   def run
-    while true
+    loop do
       instruction = @memory[@pc]
-      # puts "instruction #{instruction} memory #{@memory}"
+      # puts "pc #{@pc} instruction #{instruction} (#{@memory[@pc, 4]})"
+      # puts "memory[0] #{@memory[0]} nearby #{@memory[@pc-4, 12]}"
       case instruction
       when 1
         val1 = dereference(@pc + 1)
         val2 = dereference(@pc + 2)
         dest = @memory[@pc + 3]
+        # puts "#{val1} + #{val2} (#{val1+val2}) to location #{dest}"
         @memory[dest] = val1 + val2
         @pc += 4
       when 2
         val1 = dereference(@pc + 1)
         val2 = dereference(@pc + 2)
         dest = @memory[@pc + 3]
+        # puts "#{val1} * #{val2} (#{val1*val2}) to location #{dest}"
         @memory[dest] = val1 * val2
         @pc += 4
       when 99
-        puts "terminate"
+        # puts "terminate #{@memory[0]}"
         return @memory[0]
       else
-        puts "error"
+        # puts 'error'
         return nil
       end
+      # puts
     end
   end
 
@@ -131,10 +134,7 @@ class Program
     pointer = @memory[index]
     @memory[pointer]
   end
-
-
 end
-
 
 def solve(input)
   gravity_assist = Program.new(input)
@@ -146,21 +146,22 @@ end
 def solve2(input)
   target = 19690720
 
-  (0..99).to_a.repeated_permutation(2) do |a, b|
-    puts "Trying pair: #{a} #{b}"
+  (0..99).to_a.repeated_permutation(2) do |noun, verb|
+    # puts "Trying pair: #{noun} #{verb}"
     gravity_assist = Program.new(input.dup)
-    gravity_assist.noun = a
-    gravity_assist.verb = b
+    gravity_assist.noun = noun
+    gravity_assist.verb = verb
     if gravity_assist.run == target
-      puts "Noun #{gravity_assist.noun} verb #{gravity_assist.verb}"
+      # puts "Noun #{gravity_assist.noun} verb #{gravity_assist.verb}"
       return 100 * gravity_assist.noun + gravity_assist.verb
     end
   end
+  puts "nothing found"
   nil
 end
 
 if $PROGRAM_NAME == __FILE__
-  input = File.read('day2.input').split(",").map(&:to_i)
-  puts "The value in position 0 when complete is #{solve(input)}"
-  puts "The values to produce 19690720 combine to #{solve2(input)}"
+  input = File.read('day2.input').split(',').map(&:to_i)
+  puts "The value in position 0 when complete is #{solve(input.dup)}"
+  puts "The values to produce 19690720 combine to #{solve2(input.dup)}"
 end
