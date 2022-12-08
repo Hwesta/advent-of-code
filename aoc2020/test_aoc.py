@@ -1,6 +1,6 @@
 import pytest
 
-from . import day1, day2
+from . import day1, day2, day3
 
 @pytest.mark.parametrize('data,answer,flag', [
     (['1721', '979', '366', '299', '675', '1456'], 514579, False),
@@ -14,3 +14,9 @@ def test_day_1(data, answer, flag):
 ])
 def test_day_2(data, answer, flag):
     assert day2.solve(data, flag) == answer
+
+@pytest.mark.parametrize('data,answer,flag', [
+
+])
+def test_day_3(data, answer, flag):
+    assert day3.solve(data, flag) == answer
