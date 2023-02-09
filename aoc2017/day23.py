@@ -64,8 +64,18 @@ def solve(data, flag=False):
             registers[row[1]] *= get_value(row[2])
             mulcount += 1
         elif action == 'jnz':
+            # print(i)
+            # print('registers', registers)
+            # print('pc', pc, instructions[pc])
             if get_value(row[1]) != 0:
-                pc += get_value(row[2])
+                jump_val = get_value(row[2])
+                if jump_val == -8 and registers['g'] < -3:
+                    # Short circuit the -8 jump loop
+                    gval = abs(registers['g'])
+                    print('short circuit, adding', gval, 'to e and g')
+                    registers['e'] += gval
+                    registers['g'] += gval
+                pc += jump_val
                 pc -= 1   # Compensate for adding to it later
 
         pc += 1
@@ -73,8 +83,8 @@ def solve(data, flag=False):
         i += 1
         if i % 100000 == 0:
             print(i)
-        # if i > 10:
-        #     break
+        if i > 1000:
+            break
 
     if flag:
         return registers['h']
@@ -86,5 +96,5 @@ if __name__ == '__main__':
     this_dir = os.path.dirname(__file__)
     with open(os.path.join(this_dir, 'day23.input')) as f:
         data = f.read().strip()
-    print('mul is called', solve(data, False), 'times.')
+    # print('mul is called', solve(data, False), 'times.')
     print('After running, register h has', solve(data, True))
