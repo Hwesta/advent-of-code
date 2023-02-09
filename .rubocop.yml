@@ -1,0 +1,5 @@
+Metrics/LineLength:
+  # This will disable the rule completely, regardless what other options you put
+  Enabled: false
+Style/NumericLiterals:
+  Enabled: false
